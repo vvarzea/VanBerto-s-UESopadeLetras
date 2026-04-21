@@ -1,0 +1,927 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no">
+<title>VanBerto's — Sopa de Letras da UE 🇪🇺</title>
+<link href="https://fonts.googleapis.com/css2?family=Boogaloo&family=Nunito:wght@700;900&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
+:root{
+  --bg:#05091a;--card:rgba(14,18,50,0.97);--gold:#FFD600;--blue:#1565ff;
+  --green:#00c853;--red:#ff2d55;
+}
+html,body{width:100%;min-height:100%;background:var(--bg);font-family:'Nunito',sans-serif;color:#fff;overflow-x:hidden;}
+
+body::before{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;
+  background:radial-gradient(ellipse at 20% 20%,rgba(21,101,255,0.20),transparent 55%),
+    radial-gradient(ellipse at 80% 80%,rgba(156,39,176,0.15),transparent 55%),
+    linear-gradient(160deg,#02040f,#060a1e,#080520);}
+body::after{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;
+  background-image:
+    radial-gradient(1.5px 1.5px at 8% 15%,rgba(255,255,255,.7),transparent),
+    radial-gradient(1px 1px at 25% 55%,rgba(255,255,200,.5),transparent),
+    radial-gradient(2px 2px at 42% 8%,rgba(255,255,255,.6),transparent),
+    radial-gradient(1px 1px at 70% 35%,rgba(200,220,255,.6),transparent),
+    radial-gradient(1.5px 1.5px at 88% 8%,rgba(255,255,255,.65),transparent),
+    radial-gradient(1px 1px at 15% 80%,rgba(220,200,255,.5),transparent);
+  animation:twk 4s ease-in-out infinite alternate;}
+@keyframes twk{0%{opacity:.4;}100%{opacity:1;}}
+
+#app{position:relative;z-index:1;display:flex;flex-direction:column;align-items:center;
+  padding:12px 10px 30px;gap:14px;min-height:100vh;}
+
+/* ── HEADER ── */
+header{width:100%;max-width:700px;display:flex;align-items:center;justify-content:space-between;
+  background:linear-gradient(180deg,rgba(5,5,20,.98),rgba(10,10,28,.95));
+  border:1px solid rgba(255,214,0,.18);border-radius:18px;
+  padding:10px 16px;backdrop-filter:blur(14px);
+  box-shadow:0 4px 24px rgba(0,0,0,.5);}
+.htitle{font-family:'Boogaloo',cursive;font-size:clamp(16px,4.5vw,24px);color:var(--gold);
+  text-shadow:0 0 16px rgba(255,214,0,.4);}
+.hinfo{display:flex;gap:10px;align-items:center;}
+#timer{font-family:'Boogaloo',cursive;font-size:clamp(14px,4vw,20px);color:#fff;
+  background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.12);
+  border-radius:10px;padding:4px 12px;}
+#foundCount{font-family:'Boogaloo',cursive;font-size:clamp(12px,3.5vw,16px);
+  color:var(--gold);white-space:nowrap;}
+.hbtn{background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.12);
+  color:#fff;border-radius:9px;width:34px;height:34px;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;font-size:15px;
+  touch-action:manipulation;transition:all .15s;}
+.hbtn:active{transform:scale(.88);}
+
+/* ── GRID ── */
+#gridWrap{width:100%;max-width:700px;
+  background:var(--card);border:2px solid rgba(255,214,0,.20);
+  border-radius:20px;padding:12px;
+  box-shadow:0 12px 48px rgba(0,0,0,.5),inset 0 1px 0 rgba(255,255,255,.06);
+  backdrop-filter:blur(14px);}
+#grid{display:inline-grid;gap:2px;user-select:none;touch-action:none;width:100%;}
+
+.cell{
+  display:flex;align-items:center;justify-content:center;
+  font-family:'Boogaloo',cursive;
+  color:rgba(255,255,255,.75);border-radius:6px;cursor:pointer;
+  background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.06);
+  transition:background .1s,color .1s,transform .1s;
+  -webkit-user-select:none;user-select:none;aspect-ratio:1;}
+.cell.hover{background:rgba(255,214,0,.20);color:#fff;transform:scale(1.05);}
+.cell.selected{background:rgba(255,214,0,.35);color:#fff;border-color:rgba(255,214,0,.5);}
+.cell.found{color:#fff;font-weight:900;border-color:transparent;}
+
+/* ── WORD LIST ── */
+#wordPanel{width:100%;max-width:700px;
+  background:var(--card);border:2px solid rgba(255,214,0,.18);
+  border-radius:20px;padding:14px 16px;
+  box-shadow:0 8px 32px rgba(0,0,0,.4);backdrop-filter:blur(14px);}
+#wordPanel h3{font-family:'Boogaloo',cursive;color:var(--gold);font-size:clamp(13px,3.5vw,17px);
+  margin-bottom:10px;letter-spacing:.5px;}
+#wordList{display:flex;flex-wrap:wrap;gap:7px;}
+.word-chip{font-family:'Boogaloo',cursive;font-size:clamp(11px,3vw,14px);
+  padding:5px 12px;border-radius:20px;
+  background:rgba(255,255,255,.06);border:1.5px solid rgba(255,255,255,.14);
+  color:rgba(255,255,255,.7);transition:all .3s;}
+.word-chip.found{background:rgba(0,200,83,.15);border-color:#00c853;
+  color:#00e676;text-decoration:line-through;opacity:.7;}
+
+/* ── MODAL ── */
+.movl{position:fixed;inset:0;z-index:50;display:flex;align-items:center;justify-content:center;}
+.mbg{position:absolute;inset:0;background:rgba(2,2,14,.92);backdrop-filter:blur(12px);}
+.mcard{position:relative;z-index:1;
+  background:linear-gradient(155deg,rgba(14,14,40,.98),rgba(6,6,20,.98));
+  border:2px solid rgba(255,214,0,.30);border-radius:26px;
+  padding:clamp(20px,5vw,34px) clamp(22px,6vw,42px);
+  text-align:center;width:min(440px,96%);
+  box-shadow:0 0 90px rgba(21,101,255,.12),0 24px 64px rgba(0,0,0,.65);}
+.mcard h2{font-family:'Boogaloo',cursive;color:var(--gold);font-size:clamp(24px,7vw,38px);
+  margin-bottom:8px;text-shadow:0 0 22px rgba(255,214,0,.5);}
+.mcard p{color:rgba(255,255,255,.60);font-size:clamp(12px,3vw,15px);line-height:1.75;margin-bottom:12px;}
+.mscore{font-family:'Boogaloo',cursive;font-size:clamp(48px,13vw,68px);
+  color:var(--gold);text-shadow:0 0 34px rgba(255,214,0,.7);line-height:1;}
+.bplay{font-family:'Boogaloo',cursive;
+  background:linear-gradient(135deg,#1565ff,#7c3aed);
+  border:none;color:#fff;font-size:clamp(16px,4.5vw,21px);
+  padding:12px 40px;border-radius:50px;cursor:pointer;
+  box-shadow:0 6px 28px rgba(21,101,255,.45);
+  margin-top:12px;transition:transform .1s;touch-action:manipulation;}
+.bplay:active{transform:scale(.96);}
+.bsec{font-family:'Boogaloo',cursive;background:rgba(255,255,255,.06);
+  border:1.5px solid rgba(255,255,255,.14);color:rgba(255,255,255,.6);
+  font-size:clamp(13px,3.5vw,16px);padding:9px 24px;border-radius:50px;
+  cursor:pointer;margin-top:8px;display:inline-block;touch-action:manipulation;}
+.diff-row{display:flex;gap:8px;justify-content:center;margin-bottom:14px;flex-wrap:wrap;}
+.dbtn{font-family:'Boogaloo',cursive;font-size:clamp(11px,2.8vw,13px);
+  padding:8px 14px;border-radius:18px;border:2px solid rgba(255,255,255,.12);
+  background:rgba(255,255,255,.05);color:rgba(255,255,255,.5);cursor:pointer;
+  transition:all .2s;line-height:1.3;touch-action:manipulation;}
+.dbtn.on{border-color:var(--gold);color:var(--gold);background:rgba(255,214,0,.10);}
+.credit{color:rgba(255,255,255,.18);font-size:10px;margin-top:14px;font-family:'Boogaloo',cursive;}
+
+/* PAUSE OVERLAY */
+#pauseOverlay{display:none;position:absolute;inset:0;z-index:10;
+  background:rgba(5,9,26,.92);border-radius:18px;
+  align-items:center;justify-content:center;
+  font-family:'Boogaloo',cursive;font-size:clamp(22px,6vw,32px);
+  color:var(--gold);letter-spacing:1px;backdrop-filter:blur(6px);}
+#gridWrap{position:relative;}
+
+/* SHAKE on wrong */
+@keyframes shake{0%,100%{transform:translateX(0);}20%{transform:translateX(-6px);}40%{transform:translateX(6px);}60%{transform:translateX(-4px);}80%{transform:translateX(4px);}}
+#grid.shake{animation:shake .35s ease;}
+
+/* WORD CHIP HOVER → highlight on grid */
+.word-chip.found.active-highlight{
+  background:rgba(255,214,0,.22)!important;
+  border-color:var(--gold)!important;
+  color:var(--gold)!important;
+  text-decoration:none!important;
+  opacity:1!important;
+}
+.cell.word-highlight{
+  background:rgba(255,214,0,.30)!important;
+  border-color:rgba(255,214,0,.6)!important;
+  transform:scale(1.08);
+  z-index:2;
+}
+
+/* HINT */
+#hintCount{font-family:'Boogaloo',cursive;font-size:11px;
+  position:absolute;top:-4px;right:-4px;
+  background:var(--gold);color:#000;border-radius:50%;
+  width:16px;height:16px;display:flex;align-items:center;justify-content:center;
+  line-height:1;pointer-events:none;}
+.hbtn{position:relative;}
+@keyframes hintFlash{
+  0%{background:rgba(255,214,0,.60);transform:scale(1.15);}
+  100%{background:rgba(255,214,0,.0);transform:scale(1);}
+}
+.cell.hint-flash{animation:hintFlash 1.2s ease-out forwards!important;}
+
+/* VanBerto */
+@keyframes vbf{0%,100%{transform:translateY(0);}50%{transform:translateY(-7px);}}
+@keyframes vbBlink{0%,92%,100%{transform:scaleY(0);}95%{transform:scaleY(1);}}
+@keyframes waveVB{0%{transform:rotate(0deg);}25%{transform:rotate(-18deg);}50%{transform:rotate(0deg);}75%{transform:rotate(-18deg);}100%{transform:rotate(0deg);}}
+@keyframes vbd{0%{transform:translateY(0);}15%{transform:translateY(-16px) rotate(-12deg);}30%{transform:translateY(0);}45%{transform:translateY(-16px) rotate(12deg);}60%{transform:translateY(0);}100%{transform:translateY(0);}}
+
+/* VANBERTO COMPANION */
+#vbCompanion{
+  width:100%;max-width:700px;
+  display:flex;align-items:flex-start;gap:6px;
+  padding:0 4px;
+}
+#vbChar{
+  width:58px;flex-shrink:0;
+  animation:vbIdle 3s ease-in-out infinite;
+  filter:drop-shadow(0 3px 12px rgba(56,189,248,.35));
+  transition:transform .3s;
+}
+@keyframes vbIdle{0%,100%{transform:translateY(0);}50%{transform:translateY(-5px);}}
+@keyframes vbCelebrate{
+  0%{transform:translateY(0) rotate(0);}
+  20%{transform:translateY(-14px) rotate(-8deg);}
+  40%{transform:translateY(0) rotate(8deg);}
+  60%{transform:translateY(-10px) rotate(-5deg);}
+  80%{transform:translateY(0) rotate(3deg);}
+  100%{transform:translateY(0) rotate(0);}
+}
+@keyframes vbWaveHand{
+  0%,100%{transform:rotate(0);}
+  25%{transform:rotate(-25deg);}
+  50%{transform:rotate(0);}
+  75%{transform:rotate(-25deg);}
+}
+#vbBubble{
+  background:linear-gradient(145deg,rgba(6,10,30,.94),rgba(12,16,42,.92));
+  border:1.5px solid rgba(255,215,0,.40);
+  border-radius:18px;
+  padding:10px 16px;
+  font-family:'Boogaloo',cursive;
+  color:#FFD600;
+  font-size:clamp(12px,3vw,14px);
+  line-height:1.5;
+  position:relative;
+  max-width:360px;
+  margin-top:6px;
+  box-shadow:0 4px 24px rgba(0,0,0,.35),0 0 18px rgba(255,214,0,.08),inset 0 1px 0 rgba(255,255,255,.05);
+  animation:bubblePop .35s ease-out;
+}
+@keyframes bubblePop{0%{transform:scale(.85);opacity:0;}100%{transform:scale(1);opacity:1;}}
+#vbBubble::before{
+  content:'';position:absolute;
+  left:-11px;top:14px;
+  width:0;height:0;
+  border-top:7px solid transparent;
+  border-bottom:7px solid transparent;
+  border-right:11px solid rgba(255,215,0,.40);
+}
+#vbBubble::after{
+  content:'';position:absolute;
+  left:-8px;top:15px;
+  width:0;height:0;
+  border-top:6px solid transparent;
+  border-bottom:6px solid transparent;
+  border-right:9px solid rgba(8,12,34,.94);
+}
+
+/* CONFETTI */
+#confettiCanvas{position:fixed;inset:0;z-index:60;pointer-events:none;}
+
+/* STARS */
+.stars-row{display:flex;gap:6px;justify-content:center;margin:10px 0 4px;}
+.star{font-size:clamp(28px,8vw,42px);opacity:.2;transition:all .4s;filter:grayscale(1);}
+.star.earned{opacity:1;filter:grayscale(0);animation:starPop .5s ease backwards;}
+.star:nth-child(2).earned{animation-delay:.15s;}
+.star:nth-child(3).earned{animation-delay:.3s;}
+@keyframes starPop{0%{transform:scale(0) rotate(-30deg);opacity:0;}
+  60%{transform:scale(1.3) rotate(5deg);}100%{transform:scale(1) rotate(0);opacity:1;}}
+
+/* colors for found words */
+.c0{background:rgba(255,45,85,.25)!important;border-color:rgba(255,45,85,.5)!important;}
+.c1{background:rgba(21,101,255,.25)!important;border-color:rgba(21,101,255,.5)!important;}
+.c2{background:rgba(0,200,83,.22)!important;border-color:rgba(0,200,83,.5)!important;}
+.c3{background:rgba(255,214,0,.22)!important;border-color:rgba(255,214,0,.5)!important;}
+.c4{background:rgba(156,39,176,.28)!important;border-color:rgba(156,39,176,.5)!important;}
+.c5{background:rgba(255,152,0,.25)!important;border-color:rgba(255,152,0,.5)!important;}
+.c6{background:rgba(0,188,212,.22)!important;border-color:rgba(0,188,212,.5)!important;}
+.c7{background:rgba(233,30,99,.25)!important;border-color:rgba(233,30,99,.5)!important;}
+.c8{background:rgba(76,175,80,.22)!important;border-color:rgba(76,175,80,.5)!important;}
+.c9{background:rgba(103,58,183,.28)!important;border-color:rgba(103,58,183,.5)!important;}
+.c10{background:rgba(255,87,34,.25)!important;border-color:rgba(255,87,34,.5)!important;}
+.c11{background:rgba(0,150,136,.22)!important;border-color:rgba(0,150,136,.5)!important;}
+
+@media(max-width:480px){
+  .cell{border-radius:4px;}
+}
+</style>
+</head>
+<body>
+<div id="app">
+  <header>
+    <span class="htitle">🇪🇺 VanBerto's — Sopa de Letras</span>
+    <div class="hinfo">
+      <span id="foundCount">0/0</span>
+      <span id="timer">00:00</span>
+      <button class="hbtn" id="btnSnd" onclick="sndOn=!sndOn;this.textContent=sndOn?'🔊':'🔇'">🔊</button>
+      <button class="hbtn" id="btnHint" onclick="useHint()" title="Dica">💡<span id="hintCount">3</span></button>
+      <button class="hbtn" id="btnPause" onclick="togglePause()" title="Pausa">⏸</button>
+      <button class="hbtn" onclick="showStart()">🏠</button>
+    </div>
+  </header>
+
+  <canvas id="confettiCanvas"></canvas>
+
+  <!-- VANBERTO COMPANION -->
+  <div id="vbCompanion" style="display:none;">
+    <div id="vbChar">
+      <svg viewBox="0 0 80 90" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <linearGradient id="vbgC" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#e5f2ff"/><stop offset="100%" stop-color="#bfdbfe"/></linearGradient>
+          <linearGradient id="vvgC" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#22d3ee"/><stop offset="100%" stop-color="#38bdf8"/></linearGradient>
+        </defs>
+        <circle cx="40" cy="40" r="34" fill="rgba(147,197,253,0.22)"/>
+        <rect x="18" y="30" width="44" height="32" rx="14" fill="url(#vbgC)"/>
+        <circle cx="40" cy="46" r="7" fill="#9ca3af"/>
+        <rect x="22" y="10" width="36" height="26" rx="13" fill="url(#vbgC)"/>
+        <rect x="26" y="15" width="28" height="16" rx="8" fill="url(#vvgC)"/>
+        <rect x="26" y="15" width="28" height="16" rx="8" fill="#e5f2ff" opacity="0.9" style="transform-origin:40px 23px;animation:vbBlink 5s ease-in-out infinite;"/>
+        <circle cx="33" cy="23" r="2.5" fill="#0f172a"/><circle cx="47" cy="23" r="2.5" fill="#0f172a"/>
+        <path id="vbMouth" d="M33,28 Q40,34 47,28" stroke="#0f172a" stroke-width="1.8" fill="none" stroke-linecap="round"/>
+        <line x1="40" y1="10" x2="40" y2="4" stroke="#38bdf8" stroke-width="2"/>
+        <circle cx="40" cy="3" r="2.5" fill="#38bdf8"/>
+        <rect x="12" y="34" width="6" height="20" rx="3" fill="#e5e7eb"/>
+        <rect id="vbWaveArm" x="62" y="34" width="6" height="20" rx="3" fill="#e5e7eb" style="transform-origin:65px 34px;"/>
+        <rect x="22" y="58" width="12" height="8" rx="3" fill="#1f2937"/>
+        <rect x="46" y="58" width="12" height="8" rx="3" fill="#1f2937"/>
+        <g id="vbStars" style="opacity:0;transition:opacity .3s;">
+          <text x="4" y="14" font-size="10" fill="#FFD600">⭐</text>
+          <text x="68" y="10" font-size="8" fill="#FFD600">✨</text>
+          <text x="10" y="70" font-size="9" fill="#FFD600">✨</text>
+          <text x="64" y="68" font-size="10" fill="#FFD600">⭐</text>
+        </g>
+      </svg>
+    </div>
+    <div id="vbBubble">
+      <span id="vbBubbleText">Vamos lá! Arrasta para encontrar os países! 🤩</span>
+    </div>
+  </div>
+
+  <div id="gridWrap">
+    <div id="pauseOverlay">⏸ Jogo em Pausa</div>
+    <div id="dirHint" style="font-family:'Boogaloo',cursive;font-size:clamp(11px,2.8vw,13px);
+      color:rgba(255,214,0,.70);text-align:center;margin-bottom:8px;"></div>
+    <div id="grid"></div>
+  </div>
+
+  <div id="wordPanel">
+    <h3>🔍 Encontra os países:</h3>
+    <div id="wordList"></div>
+  </div>
+</div>
+
+<!-- MODAL INÍCIO -->
+<div class="movl" id="startMod">
+  <div class="mbg"></div>
+  <div class="mcard">
+    <div style="display:flex;align-items:center;justify-content:center;gap:10px;margin-bottom:10px;">
+      <div style="width:54px;animation:vbf 3s ease-in-out infinite;filter:drop-shadow(0 3px 10px rgba(56,189,248,.35));">
+        <svg viewBox="0 0 80 80" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <linearGradient id="vbgS" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#e5f2ff"/><stop offset="100%" stop-color="#bfdbfe"/></linearGradient>
+            <linearGradient id="vvgS" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#22d3ee"/><stop offset="100%" stop-color="#38bdf8"/></linearGradient>
+          </defs>
+          <circle cx="40" cy="40" r="34" fill="rgba(147,197,253,0.22)"/>
+          <rect x="18" y="30" width="44" height="32" rx="14" fill="url(#vbgS)"/>
+          <circle cx="40" cy="46" r="7" fill="#9ca3af"/>
+          <rect x="22" y="10" width="36" height="26" rx="13" fill="url(#vbgS)"/>
+          <rect x="26" y="15" width="28" height="16" rx="8" fill="url(#vvgS)"/>
+          <rect x="26" y="15" width="28" height="16" rx="8" fill="#e5f2ff" opacity="0.9" style="transform-origin:40px 23px;animation:vbBlink 5s ease-in-out infinite;"/>
+          <circle cx="33" cy="23" r="2.5" fill="#0f172a"/><circle cx="47" cy="23" r="2.5" fill="#0f172a"/>
+          <line x1="40" y1="10" x2="40" y2="4" stroke="#38bdf8" stroke-width="2"/>
+          <circle cx="40" cy="3" r="2.5" fill="#38bdf8"/>
+          <rect x="12" y="34" width="6" height="20" rx="3" fill="#e5e7eb"/>
+          <rect x="62" y="34" width="6" height="20" rx="3" fill="#e5e7eb" style="transform-origin:65px 44px;animation:waveVB 1.5s ease-in-out infinite;"/>
+          <rect x="22" y="58" width="12" height="8" rx="3" fill="#1f2937"/>
+          <rect x="46" y="58" width="12" height="8" rx="3" fill="#1f2937"/>
+        </svg>
+      </div>
+      <div style="background:rgba(6,10,30,.90);border:1.5px solid rgba(255,215,0,.38);border-radius:14px;padding:8px 12px;font-family:'Boogaloo',cursive;color:#FFD600;font-size:13px;max-width:180px;line-height:1.45;">
+        Olá! Sou o VanBerto's<br>Encontra os países<br>da União Europeia!
+      </div>
+    </div>
+    <h2>VanBerto's — Sopa de Letras</h2>
+    <p>Encontra os nomes dos países<br>da União Europeia escondidos<br>na grelha de letras!</p>
+    <div class="diff-row">
+      <button class="dbtn on" id="d1" onclick="setDiff(1)">😊 Fácil<br><small>10 palavras · 10×10<br>→ e ↓ apenas</small></button>
+      <button class="dbtn" id="d2" onclick="setDiff(2)">⚡ Normal<br><small>15 palavras · 15×15<br>→ ↓ e diagonal ↘</small></button>
+      <button class="dbtn" id="d3" onclick="setDiff(3)">🔥 Difícil<br><small>20 palavras · 18×18<br>todas as direções</small></button>
+    </div>
+    <button class="bplay" onclick="startGame()">🔍 Jogar!</button>
+    <p class="credit">Professora: Vanda Várzea</p>
+  </div>
+</div>
+
+<!-- MODAL FIM -->
+<div class="movl" id="endMod" style="display:none;">
+  <div class="mbg"></div>
+  <div class="mcard">
+    <div style="display:flex;align-items:center;justify-content:center;gap:10px;margin-bottom:8px;">
+      <div id="endVb" style="width:54px;filter:drop-shadow(0 3px 10px rgba(56,189,248,.35));animation:vbd .85s ease infinite;">
+        <svg viewBox="0 0 80 80" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <linearGradient id="vbgE" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#e5f2ff"/><stop offset="100%" stop-color="#bfdbfe"/></linearGradient>
+            <linearGradient id="vvgE" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#22d3ee"/><stop offset="100%" stop-color="#38bdf8"/></linearGradient>
+          </defs>
+          <circle cx="40" cy="40" r="34" fill="rgba(147,197,253,0.22)"/>
+          <rect x="18" y="30" width="44" height="32" rx="14" fill="url(#vbgE)"/>
+          <circle cx="40" cy="46" r="7" fill="#9ca3af"/>
+          <rect x="22" y="10" width="36" height="26" rx="13" fill="url(#vbgE)"/>
+          <rect x="26" y="15" width="28" height="16" rx="8" fill="url(#vvgE)"/>
+          <rect x="26" y="15" width="28" height="16" rx="8" fill="#e5f2ff" opacity="0.9" style="transform-origin:40px 23px;animation:vbBlink 5s ease-in-out infinite;"/>
+          <circle cx="33" cy="23" r="2.5" fill="#0f172a"/><circle cx="47" cy="23" r="2.5" fill="#0f172a"/>
+          <line x1="40" y1="10" x2="40" y2="4" stroke="#38bdf8" stroke-width="2"/>
+          <circle cx="40" cy="3" r="2.5" fill="#38bdf8"/>
+          <rect x="12" y="34" width="6" height="20" rx="3" fill="#e5e7eb"/>
+          <rect x="62" y="34" width="6" height="20" rx="3" fill="#e5e7eb" style="transform-origin:65px 44px;animation:waveVB 1.5s ease-in-out infinite;"/>
+          <rect x="22" y="58" width="12" height="8" rx="3" fill="#1f2937"/>
+          <rect x="46" y="58" width="12" height="8" rx="3" fill="#1f2937"/>
+        </svg>
+      </div>
+      <div id="endVbMsg" style="background:rgba(6,10,30,.90);border:1.5px solid rgba(255,215,0,.38);border-radius:14px;padding:8px 12px;font-family:'Boogaloo',cursive;color:#FFD600;font-size:13px;max-width:180px;line-height:1.45;">
+        Parabéns! 🎉
+      </div>
+    </div>
+    <h2 id="endTitle">Parabéns!</h2>
+    <div class="stars-row" id="starsRow">
+      <span class="star" id="star1">⭐</span>
+      <span class="star" id="star2">⭐</span>
+      <span class="star" id="star3">⭐</span>
+    </div>
+    <div class="mscore" id="endTime">00:00</div>
+    <p id="endTxt"></p>
+    <button class="bplay" onclick="startGame()">🔄 Jogar outra vez</button>
+    <br><button class="bsec" onclick="showStart()">🏠 Início</button>
+    <p class="credit">Professora: Vanda Várzea</p>
+  </div>
+</div>
+
+<script>
+// ─── DADOS ───────────────────────────────────────────────────────
+const ALL_WORDS = [
+  'PORTUGAL','ESPANHA','FRANCA','ALEMANHA','ITALIA','BELGICA','POLONIA',
+  'SUECIA','AUSTRIA','GRECIA','ROMENIA','HUNGRIA','CROACIA','BULGARIA',
+  'ESLOVENIA','LITUANIA','LETONIA','ESTONIA','MALTA','CHIPRE',
+  'LUXEMBURGO','IRLANDA','FINLANDIA','DINAMARCA','ESLOVAQUIA'
+];
+
+const DISPLAY = {
+  'PORTUGAL':'Portugal','ESPANHA':'Espanha','FRANCA':'França',
+  'ALEMANHA':'Alemanha','ITALIA':'Itália','BELGICA':'Bélgica',
+  'POLONIA':'Polónia','SUECIA':'Suécia','AUSTRIA':'Áustria',
+  'GRECIA':'Grécia','ROMENIA':'Roménia','HUNGRIA':'Hungria',
+  'CROACIA':'Croácia','BULGARIA':'Bulgária','ESLOVENIA':'Eslovénia',
+  'LITUANIA':'Lituânia','LETONIA':'Letónia','ESTONIA':'Estónia',
+  'MALTA':'Malta','CHIPRE':'Chipre','LUXEMBURGO':'Luxemburgo',
+  'IRLANDA':'Irlanda','FINLANDIA':'Finlândia','DINAMARCA':'Dinamarca',
+  'ESLOVAQUIA':'Eslováquia'
+};
+
+// ─── VOZ ─────────────────────────────────────────────────────────
+const PHONETIC={
+  'PORTUGAL':'Portugal','ESPANHA':'Espanha','FRANCA':'França',
+  'ALEMANHA':'Alemanha','ITALIA':'Itália','BELGICA':'Bélgica',
+  'POLONIA':'Polónia','SUECIA':'Suécia','AUSTRIA':'Áustria',
+  'GRECIA':'Grécia','ROMENIA':'Roménia','HUNGRIA':'Hungria',
+  'CROACIA':'Croácia','BULGARIA':'Bulgária','ESLOVENIA':'Eslovénia',
+  'LITUANIA':'Lituânia','LETONIA':'Letónia','ESTONIA':'Estónia',
+  'MALTA':'Malta','CHIPRE':'Chipre','LUXEMBURGO':'Luxemburgo',
+  'IRLANDA':'Irlanda','FINLANDIA':'Finlândia','DINAMARCA':'Dinamarca',
+  'ESLOVAQUIA':'Eslováquia',
+};
+let sndOn=true;
+function speak(txt){
+  if(!sndOn) return;
+  try{
+    window.speechSynthesis.cancel();
+    const u=new SpeechSynthesisUtterance(txt);
+    u.lang='pt-PT';u.rate=0.84;u.pitch=1.05;
+    const vs=window.speechSynthesis.getVoices();
+    const pt=vs.find(v=>v.lang==='pt-PT')||vs.find(v=>v.lang.startsWith('pt'));
+    if(pt) u.voice=pt;
+    window.speechSynthesis.speak(u);
+  }catch(e){}
+}
+window.speechSynthesis?.getVoices();
+
+// ─── ESTADO ──────────────────────────────────────────────────────
+let diff=1, gridSize=12, words=[], grid=[], placed=[], foundWords=[];
+let selecting=false, startCell=null, currentCells=[], timerInterval=null, elapsed=0;
+let hintsLeft=3;
+let paused=false;
+
+function setDiff(d){diff=d;[1,2,3].forEach(i=>document.getElementById('d'+i).classList.toggle('on',i===d));}
+function showStart(){
+  stopTimer();
+  document.getElementById('startMod').style.display='flex';
+  document.getElementById('endMod').style.display='none';
+  document.getElementById('vbCompanion').style.display='none';
+}
+
+// ─── TIMER ───────────────────────────────────────────────────────
+function startTimer(){
+  clearInterval(timerInterval);elapsed=0;
+  timerInterval=setInterval(()=>{
+    elapsed++;
+    const m=Math.floor(elapsed/60),s=elapsed%60;
+    document.getElementById('timer').textContent=
+      String(m).padStart(2,'0')+':'+String(s).padStart(2,'0');
+  },1000);
+}
+function stopTimer(){clearInterval(timerInterval);}
+
+// ─── GERAÇÃO DA GRELHA ───────────────────────────────────────────
+function shuffle(a){let b=[...a];for(let i=b.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[b[i],b[j]]=[b[j],b[i]];}return b;}
+
+function buildGrid(){
+  gridSize = diff===1?10:diff===2?15:18;
+  const count = diff===1?10:diff===2?15:20;
+  words = shuffle([...ALL_WORDS]).slice(0,count);
+  grid = Array.from({length:gridSize},()=>Array(gridSize).fill(''));
+  placed = [];
+
+  const DIRS=[[0,1],[1,0],[1,1],[-1,1],[0,-1],[-1,0],[-1,-1],[1,-1]];
+  const dirs = diff===1?[[0,1],[1,0]]:diff===2?[[0,1],[1,0],[1,1],[-1,1]]:DIRS;
+
+  words.forEach(w=>{
+    let ok=false;
+    for(let attempt=0;attempt<200&&!ok;attempt++){
+      const [dr,dc]=dirs[Math.floor(Math.random()*dirs.length)];
+      const r=Math.floor(Math.random()*gridSize);
+      const c=Math.floor(Math.random()*gridSize);
+      const cells=[];
+      let fits=true;
+      for(let i=0;i<w.length;i++){
+        const nr=r+dr*i,nc=c+dc*i;
+        if(nr<0||nr>=gridSize||nc<0||nc>=gridSize){fits=false;break;}
+        if(grid[nr][nc]!==''&&grid[nr][nc]!==w[i]){fits=false;break;}
+        cells.push([nr,nc]);
+      }
+      if(fits){
+        cells.forEach(([nr,nc],i)=>grid[nr][nc]=w[i]);
+        placed.push({word:w,cells});
+        ok=true;
+      }
+    }
+  });
+
+  // Letras de preenchimento: mais frequentes em português, sem confusões
+  const FILL = diff===1
+    ? 'AAEEIIOOUUMMNNSSLRRTCPBDFGHV'   // fácil: letras comuns PT
+    : 'ABCDEFGHILMNOPRSTUV';            // normal/difícil: ligeiramente mais variado
+  for(let r=0;r<gridSize;r++)for(let c=0;c<gridSize;c++)
+    if(!grid[r][c]) grid[r][c]=FILL[Math.floor(Math.random()*FILL.length)];
+
+  // IMPORTANTE: só pedir palavras que foram realmente colocadas na grelha
+  words = placed.map(p=>p.word);
+}
+
+// ─── RENDER ──────────────────────────────────────────────────────
+function renderGrid(){
+  const g=document.getElementById('grid');
+  const wrap=document.getElementById('gridWrap');
+  const padding=24;
+  const gap=2;
+  const availW=wrap.clientWidth - padding;
+  // Use more vertical space — calculate after header/vb/wordpanel
+  const usedV = 200; // rough estimate for header+vb+wordpanel+margins
+  const availH = Math.min(window.innerHeight - usedV, window.innerWidth * 0.92);
+  const cellFromW=Math.floor((availW - gap*(gridSize-1)) / gridSize);
+  const cellFromH=Math.floor((availH - gap*(gridSize-1)) / gridSize);
+  // Easy mode gets bigger cells — cap higher
+  const maxCell = diff===1 ? 56 : diff===2 ? 44 : 36;
+  const cellSize=Math.max(18, Math.min(cellFromW, cellFromH, maxCell));
+  const fontSize=Math.max(10, Math.floor(cellSize * 0.54));
+
+  g.style.gridTemplateColumns=`repeat(${gridSize},${cellSize}px)`;
+  g.style.gap=gap+'px';
+  // Centre the grid inside gridWrap
+  g.style.width='auto';
+  g.style.margin='0 auto';
+  g.innerHTML='';
+  for(let r=0;r<gridSize;r++)for(let c=0;c<gridSize;c++){
+    const cell=document.createElement('div');
+    cell.className='cell';
+    cell.style.width=cellSize+'px';
+    cell.style.height=cellSize+'px';
+    cell.style.fontSize=fontSize+'px';
+    cell.textContent=grid[r][c];
+    cell.dataset.r=r;cell.dataset.c=c;
+    g.appendChild(cell);
+  }
+  updateFoundColors();
+}
+
+function renderWords(){
+  const wl=document.getElementById('wordList');
+  wl.innerHTML='';
+  words.forEach(w=>{
+    const chip=document.createElement('span');
+    chip.className='word-chip'+(foundWords.includes(w)?' found':'');
+    chip.id='chip-'+w;
+    chip.textContent=DISPLAY[w];
+    // Hover to highlight found word on grid
+    if(foundWords.includes(w)){
+      chip.addEventListener('mouseenter',()=>highlightWordOnGrid(w,true));
+      chip.addEventListener('mouseleave',()=>highlightWordOnGrid(w,false));
+      chip.addEventListener('touchstart',()=>highlightWordOnGrid(w,true),{passive:true});
+      chip.addEventListener('touchend',()=>highlightWordOnGrid(w,false),{passive:true});
+    }
+    wl.appendChild(chip);
+  });
+  document.getElementById('foundCount').textContent=foundWords.length+'/'+words.length;
+}
+
+function highlightWordOnGrid(word, on){
+  const p=placed.find(x=>x.word===word);
+  if(!p) return;
+  const chip=document.getElementById('chip-'+word);
+  if(chip) chip.classList.toggle('active-highlight', on);
+  p.cells.forEach(([r,c])=>{
+    const el=document.querySelector(`.cell[data-r="${r}"][data-c="${c}"]`);
+    if(el) el.classList.toggle('word-highlight', on);
+  });
+}
+
+function updateFoundColors(){
+  placed.forEach(({word,cells},idx)=>{
+    if(foundWords.includes(word)){
+      const ci=idx%12;
+      cells.forEach(([r,c])=>{
+        const el=document.querySelector(`.cell[data-r="${r}"][data-c="${c}"]`);
+        if(el){el.classList.add('found','c'+ci);}
+      });
+    }
+  });
+}
+
+// ─── SELECÇÃO (mouse + touch) ─────────────────────────────────────
+function cellAt(r,c){return document.querySelector(`.cell[data-r="${r}"][data-c="${c}"]`);}
+
+function getLineCells(r1,c1,r2,c2){
+  const dr=Math.sign(r2-r1),dc=Math.sign(c2-c1);
+  const len=Math.max(Math.abs(r2-r1),Math.abs(c2-c1));
+  // only valid if perfectly horizontal, vertical or diagonal
+  if(r1!==r2&&c1!==c2&&Math.abs(r2-r1)!==Math.abs(c2-c1)) return [];
+  const cells=[];
+  for(let i=0;i<=len;i++) cells.push([r1+dr*i,c1+dc*i]);
+  return cells;
+}
+
+function highlightCells(cells,cls){
+  document.querySelectorAll('.cell.hover,.cell.selected').forEach(el=>{
+    if(!el.classList.contains('found')){el.classList.remove('hover','selected');}
+  });
+  cells.forEach(([r,c])=>{
+    const el=cellAt(r,c);
+    if(el&&!el.classList.contains('found')) el.classList.add(cls);
+  });
+}
+
+function getPointerCell(e){
+  const touch=e.touches?e.touches[0]:e;
+  const el=document.elementFromPoint(touch.clientX,touch.clientY);
+  if(el&&el.classList.contains('cell')) return el;
+  return null;
+}
+
+function onStart(e){
+  e.preventDefault();
+  if(paused) return;
+  const el=getPointerCell(e);
+  if(!el) return;
+  selecting=true;
+  startCell=el;
+  currentCells=[[+el.dataset.r,+el.dataset.c]];
+  highlightCells(currentCells,'selected');
+}
+
+function onMove(e){
+  e.preventDefault();
+  if(!selecting||!startCell) return;
+  const el=getPointerCell(e);
+  if(!el) return;
+  const r1=+startCell.dataset.r,c1=+startCell.dataset.c;
+  const r2=+el.dataset.r,c2=+el.dataset.c;
+  currentCells=getLineCells(r1,c1,r2,c2);
+  highlightCells(currentCells,'selected');
+}
+
+function onEnd(e){
+  e.preventDefault();
+  if(!selecting) return;
+  selecting=false;
+  checkSelection();
+  highlightCells([],'');
+  currentCells=[];startCell=null;
+}
+
+function checkSelection(){
+  if(currentCells.length<2) return;
+  const word=currentCells.map(([r,c])=>grid[r][c]).join('');
+  const wordRev=word.split('').reverse().join('');
+  const match=placed.find(p=>
+    !foundWords.includes(p.word)&&
+    (p.word===word||p.word===wordRev)
+  );
+  if(match){
+    foundWords.push(match.word);
+    speak('Muito bem! '+(PHONETIC[match.word]||match.word));
+    updateFoundColors();
+    renderWords();
+    vbOnWordFound();
+    if(foundWords.length===words.length) setTimeout(endGame,500);
+  } else if(currentCells.length>=2){
+    // Shake the grid on wrong selection
+    const g=document.getElementById('grid');
+    g.classList.remove('shake');
+    void g.offsetWidth;
+    g.classList.add('shake');
+    setTimeout(()=>g.classList.remove('shake'),400);
+  }
+}
+
+// bind events
+function bindEvents(){
+  const g=document.getElementById('grid');
+  g.addEventListener('mousedown',onStart);
+  g.addEventListener('mousemove',onMove);
+  g.addEventListener('mouseup',onEnd);
+  g.addEventListener('touchstart',onStart,{passive:false});
+  g.addEventListener('touchmove',onMove,{passive:false});
+  g.addEventListener('touchend',onEnd,{passive:false});
+}
+
+// ─── JOGO ─────────────────────────────────────────────────────────
+function startGame(){
+  document.getElementById('startMod').style.display='none';
+  document.getElementById('endMod').style.display='none';
+  const hints=['😊 Palavras só na horizontal → e vertical ↓',
+    '⚡ Palavras na horizontal →, vertical ↓ e diagonal ↘',
+    '🔥 Palavras em todas as direções, incluindo ao contrário!'];
+  document.getElementById('dirHint').textContent=hints[diff-1];
+  foundWords=[];
+  hintsLeft=3;
+  paused=false;
+  document.getElementById('pauseOverlay').style.display='none';
+  document.getElementById('btnPause').textContent='⏸';
+  document.getElementById('hintCount').textContent='3';
+  document.getElementById('btnHint').style.opacity='1';
+  buildGrid();
+  renderGrid();
+  renderWords();
+  bindEvents();
+  startTimer();
+  // show VanBerto companion
+  document.getElementById('vbCompanion').style.display='flex';
+  vbSetMsg(vbRandom(VB_MSGS_START));
+}
+
+function endGame(){
+  stopTimer();
+  document.getElementById('vbCompanion').style.display='none';
+  const m=Math.floor(elapsed/60),s=elapsed%60;
+  const timeStr=String(m).padStart(2,'0')+':'+String(s).padStart(2,'0');
+  document.getElementById('endTime').textContent=timeStr;
+  
+  // stars based on time per word
+  const secsPerWord=elapsed/words.length;
+  let stars=3;
+  if(secsPerWord>15) stars=2;
+  if(secsPerWord>30) stars=1;
+  
+  for(let i=1;i<=3;i++){
+    document.getElementById('star'+i).classList.toggle('earned',i<=stars);
+  }
+  
+  const titles=['','Bom trabalho! 👏','Muito bem! 🎉','Excelente! 🏆'];
+  const vbMsgs=['','Nada mau! 👍<br>Tenta superar-te!',
+    'Fantástico! 🎉<br>Encontraste<br>tudo!',
+    'Incrível! 🌟<br>Resultado<br>perfeito!'];
+  
+  document.getElementById('endTitle').textContent=titles[stars];
+  document.getElementById('endTxt').textContent='Encontraste todas as '+words.length+' palavras em '+timeStr+'!';
+  document.getElementById('endVbMsg').innerHTML=vbMsgs[stars];
+  document.getElementById('endMod').style.display='flex';
+  launchConfetti();
+}
+
+// ─── VANBERTO COMPANION ──────────────────────────────────────────
+const VB_MSGS_START=[
+  'Vamos lá! Arrasta para encontrar os países! 🤩',
+  'Olha bem para a grelha e descobre-os! 🔍',
+  'Boa sorte! Estou aqui a torcer por ti! 🍀',
+];
+const VB_MSGS_FOUND=[
+  'Boa! Encontraste! 🎉',
+  'Muito bem! Continua assim! 💪',
+  'Excelente! Tens bons olhos! ⭐',
+  'Fantástico! Que craque! 🏆',
+  'Isso mesmo! Estás a arrasar! 🔥',
+  'Uau! Que rápido! ⚡',
+  'Incrível! Mais um! 🌟',
+];
+const VB_MSGS_HALF=[
+  'Já vais a meio! Não pares agora! 🚀',
+  'Metade encontrada! Estás quase lá! 💫',
+];
+const VB_MSGS_ALMOST=[
+  'Falta tão pouco! Força! 🏁',
+  'Quase, quase! Só mais um bocadinho! 😄',
+];
+
+function vbRandom(arr){ return arr[Math.floor(Math.random()*arr.length)]; }
+
+function vbSetMsg(txt){
+  const bubble=document.getElementById('vbBubbleText');
+  bubble.textContent=txt;
+  const parent=document.getElementById('vbBubble');
+  parent.style.animation='none';
+  parent.offsetHeight;
+  parent.style.animation='bubblePop .35s ease-out';
+}
+
+function vbCelebrate(){
+  const char=document.getElementById('vbChar');
+  const arm=document.getElementById('vbWaveArm');
+  const stars=document.getElementById('vbStars');
+  char.style.animation='vbCelebrate .7s ease';
+  arm.style.animation='vbWaveHand .6s ease-in-out 2';
+  stars.style.opacity='1';
+  setTimeout(()=>{
+    char.style.animation='vbIdle 3s ease-in-out infinite';
+    arm.style.animation='';
+    stars.style.opacity='0';
+  },1800);
+}
+
+function vbOnWordFound(){
+  const total=words.length;
+  const done=foundWords.length;
+  const ratio=done/total;
+  
+  if(ratio>=1) return;
+  
+  if(ratio>=0.85){
+    vbSetMsg(vbRandom(VB_MSGS_ALMOST));
+  } else if(Math.abs(ratio-0.5)<0.08 && done>1){
+    vbSetMsg(vbRandom(VB_MSGS_HALF));
+  } else {
+    vbSetMsg(vbRandom(VB_MSGS_FOUND));
+  }
+  vbCelebrate();
+}
+
+// ─── PAUSA ⏸ ─────────────────────────────────────────────────────
+function togglePause(){
+  paused=!paused;
+  const overlay=document.getElementById('pauseOverlay');
+  const btn=document.getElementById('btnPause');
+  if(paused){
+    clearInterval(timerInterval);
+    overlay.style.display='flex';
+    btn.textContent='▶️';
+  } else {
+    overlay.style.display='none';
+    btn.textContent='⏸';
+    // Restart timer from where we left off
+    timerInterval=setInterval(()=>{
+      elapsed++;
+      const m=Math.floor(elapsed/60),s=elapsed%60;
+      document.getElementById('timer').textContent=
+        String(m).padStart(2,'0')+':'+String(s).padStart(2,'0');
+    },1000);
+  }
+}
+
+// ─── DICA 💡 ──────────────────────────────────────────────────────
+function useHint(){
+  if(hintsLeft<=0) return;
+  // Find a word not yet found
+  const remaining=placed.filter(p=>!foundWords.includes(p.word));
+  if(!remaining.length) return;
+  // Pick a random remaining word
+  const pick=remaining[Math.floor(Math.random()*remaining.length)];
+  // Flash its first cell
+  const [r,c]=pick.cells[0];
+  const el=document.querySelector(`.cell[data-r="${r}"][data-c="${c}"]`);
+  if(el){
+    el.classList.remove('hint-flash');
+    void el.offsetWidth; // reflow
+    el.classList.add('hint-flash');
+    setTimeout(()=>el.classList.remove('hint-flash'),1300);
+  }
+  // Also show the word name in VanBerto bubble
+  vbSetMsg('💡 Dica: a palavra "'+DISPLAY[pick.word]+'" começa aqui! ✨');
+  speak('Dica: a palavra '+PHONETIC[pick.word]+' começa aqui');
+  // Decrease hint counter
+  hintsLeft--;
+  document.getElementById('hintCount').textContent=hintsLeft;
+  if(hintsLeft<=0){
+    document.getElementById('btnHint').style.opacity='0.35';
+  }
+}
+
+// ─── CONFETTI 🎊 ────────────────────────────────────────────────
+function launchConfetti(){
+  const canvas=document.getElementById('confettiCanvas');
+  const ctx=canvas.getContext('2d');
+  canvas.width=window.innerWidth;
+  canvas.height=window.innerHeight;
+  
+  const colors=['#FFD600','#1565ff','#7c3aed','#10b981','#ef4444','#f97316','#38bdf8','#ec4899'];
+  const pieces=[];
+  for(let i=0;i<120;i++){
+    pieces.push({
+      x:Math.random()*canvas.width,
+      y:Math.random()*canvas.height*-1 -20,
+      w:Math.random()*8+4,
+      h:Math.random()*5+3,
+      color:colors[Math.floor(Math.random()*colors.length)],
+      vy:Math.random()*3+2,
+      vx:(Math.random()-0.5)*2,
+      rot:Math.random()*360,
+      rv:(Math.random()-0.5)*8,
+      opacity:1,
+    });
+  }
+  
+  let frame=0;
+  function draw(){
+    ctx.clearRect(0,0,canvas.width,canvas.height);
+    let alive=false;
+    pieces.forEach(p=>{
+      p.x+=p.vx; p.y+=p.vy; p.rot+=p.rv;
+      if(frame>90) p.opacity=Math.max(0,p.opacity-0.015);
+      if(p.opacity<=0) return;
+      alive=true;
+      ctx.save();
+      ctx.translate(p.x,p.y);
+      ctx.rotate(p.rot*Math.PI/180);
+      ctx.globalAlpha=p.opacity;
+      ctx.fillStyle=p.color;
+      ctx.fillRect(-p.w/2,-p.h/2,p.w,p.h);
+      ctx.restore();
+    });
+    frame++;
+    if(alive && frame<220) requestAnimationFrame(draw);
+    else ctx.clearRect(0,0,canvas.width,canvas.height);
+  }
+  requestAnimationFrame(draw);
+}
+
+// iniciar
+showStart();
+window.addEventListener('resize', ()=>{ if(grid.length) renderGrid(); });
+</script>
+</body>
+</html>
