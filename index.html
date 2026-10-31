@@ -29,7 +29,7 @@ body::after{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;
 @keyframes twk{0%{opacity:.4;}100%{opacity:1;}}
 
 #app{position:relative;z-index:1;display:flex;flex-direction:column;align-items:center;
-  padding:12px 10px 30px;gap:14px;min-height:100vh;}
+  padding:12px 10px 150px;gap:14px;min-height:100vh;}
 
 /* ── HEADER ── */
 header{width:100%;max-width:700px;display:flex;align-items:center;justify-content:space-between;
@@ -116,7 +116,6 @@ header{width:100%;max-width:700px;display:flex;align-items:center;justify-conten
   background:rgba(255,255,255,.05);color:rgba(255,255,255,.5);cursor:pointer;
   transition:all .2s;line-height:1.3;touch-action:manipulation;}
 .dbtn.on{border-color:var(--gold);color:var(--gold);background:rgba(255,214,0,.10);}
-.credit{color:rgba(255,255,255,.18);font-size:10px;margin-top:14px;font-family:'Boogaloo',cursive;}
 
 /* PAUSE OVERLAY */
 #pauseOverlay{display:none;position:absolute;inset:0;z-index:10;
@@ -164,65 +163,54 @@ header{width:100%;max-width:700px;display:flex;align-items:center;justify-conten
 @keyframes waveVB{0%{transform:rotate(0deg);}25%{transform:rotate(-18deg);}50%{transform:rotate(0deg);}75%{transform:rotate(-18deg);}100%{transform:rotate(0deg);}}
 @keyframes vbd{0%{transform:translateY(0);}15%{transform:translateY(-16px) rotate(-12deg);}30%{transform:translateY(0);}45%{transform:translateY(-16px) rotate(12deg);}60%{transform:translateY(0);}100%{transform:translateY(0);}}
 
-/* VANBERTO COMPANION */
-#vbCompanion{
-  width:100%;max-width:700px;
-  display:flex;align-items:flex-start;gap:6px;
-  padding:0 4px;
+/* ═══ NOME DO JOGADOR ═══ */
+.name-row{display:flex;align-items:center;gap:8px;justify-content:center;flex-wrap:wrap;margin:0 0 14px;}
+.name-row label{font-family:'Boogaloo',cursive;color:var(--gold);font-size:clamp(14px,3.6vw,17px);white-space:nowrap;}
+.name-row input{
+  flex:1;min-width:150px;max-width:240px;
+  border:2px solid rgba(255,214,0,.55);border-radius:12px;padding:8px 12px;
+  font-size:16px;font-family:'Nunito',sans-serif;font-weight:900;
+  background:rgba(255,255,255,.06);color:#fff;outline:none;
+  box-shadow:2px 2px 0 rgba(255,214,0,.35);transition:box-shadow .15s;
 }
-#vbChar{
-  width:58px;flex-shrink:0;
-  animation:vbIdle 3s ease-in-out infinite;
-  filter:drop-shadow(0 3px 12px rgba(56,189,248,.35));
-  transition:transform .3s;
+.name-row input:focus{box-shadow:2px 2px 0 var(--gold),0 0 0 3px rgba(255,214,0,.25);}
+.name-row input::placeholder{color:rgba(255,214,0,.45);}
+
+/* ═══ ROBOT FLUTUANTE FIXO (VanBerto's atual) ═══ */
+#fixed-robot-wrap{
+  position:fixed;bottom:clamp(.6rem,2vh,1.2rem);right:clamp(.6rem,2vw,1.2rem);
+  z-index:70;display:flex;flex-direction:column;align-items:center;gap:2px;pointer-events:auto;
 }
-@keyframes vbIdle{0%,100%{transform:translateY(0);}50%{transform:translateY(-5px);}}
-@keyframes vbCelebrate{
-  0%{transform:translateY(0) rotate(0);}
-  20%{transform:translateY(-14px) rotate(-8deg);}
-  40%{transform:translateY(0) rotate(8deg);}
-  60%{transform:translateY(-10px) rotate(-5deg);}
-  80%{transform:translateY(0) rotate(3deg);}
-  100%{transform:translateY(0) rotate(0);}
+#fixed-vb-robot{
+  width:clamp(64px,8.5vw,92px);height:auto;display:block;cursor:pointer;
+  animation:vbFloat 3s ease-in-out infinite;filter:drop-shadow(0 0 12px #7dd3fc);
 }
-@keyframes vbWaveHand{
-  0%,100%{transform:rotate(0);}
-  25%{transform:rotate(-25deg);}
-  50%{transform:rotate(0);}
-  75%{transform:rotate(-25deg);}
+#fixed-vb-robot:hover{filter:drop-shadow(0 0 24px #38bdf8);}
+#fixed-vb-robot:focus-visible{outline:3px solid #ffd700;outline-offset:4px;border-radius:12px;}
+#fixed-vb-robot.bounce{animation:robotPop .65s cubic-bezier(.34,1.56,.64,1),vbFloat 3s ease-in-out .65s infinite;}
+@keyframes vbFloat{0%,100%{transform:translateY(0);}50%{transform:translateY(-7px);}}
+@keyframes robotPop{0%,100%{transform:translateY(0) rotate(0)}30%{transform:translateY(-18px) rotate(-6deg)}70%{transform:translateY(-8px) rotate(5deg)}}
+#fixed-bubble{
+  --bc:#dcebff;
+  background:linear-gradient(135deg,var(--bc),#fff);
+  border:3px solid #0f172a;outline:2px solid #1e293b;outline-offset:-4px;
+  border-radius:16px;padding:6px 10px 5px;box-shadow:3px 3px 0 #0f172a;
+  font-family:"Comic Sans MS","Trebuchet MS",sans-serif;
+  font-size:clamp(.6rem,1.5vw,.78rem);font-weight:bold;color:#0f172a;
+  max-width:160px;min-width:80px;text-align:center;pointer-events:none;position:relative;
+  opacity:0;transform:translateY(-6px) scale(.88);
+  transition:opacity .38s,transform .38s cubic-bezier(.34,1.56,.64,1);margin-bottom:4px;
 }
-#vbBubble{
-  background:linear-gradient(145deg,rgba(6,10,30,.94),rgba(12,16,42,.92));
-  border:1.5px solid rgba(255,215,0,.40);
-  border-radius:18px;
-  padding:10px 16px;
-  font-family:'Boogaloo',cursive;
-  color:#FFD600;
-  font-size:clamp(12px,3vw,14px);
-  line-height:1.5;
-  position:relative;
-  max-width:360px;
-  margin-top:6px;
-  box-shadow:0 4px 24px rgba(0,0,0,.35),0 0 18px rgba(255,214,0,.08),inset 0 1px 0 rgba(255,255,255,.05);
-  animation:bubblePop .35s ease-out;
+#fixed-bubble::after{content:"";position:absolute;bottom:-14px;left:50%;transform:translateX(-50%);border-left:10px solid transparent;border-right:10px solid transparent;border-top:14px solid #0f172a;}
+#fixed-bubble::before{content:"";position:absolute;bottom:-9px;left:50%;transform:translateX(-50%);border-left:8px solid transparent;border-right:8px solid transparent;border-top:11px solid var(--bc);z-index:1;}
+#fixed-bubble.show{opacity:1;transform:translateY(0) scale(1);}
+#fixed-robot-name{
+  font-family:'Boogaloo',cursive;font-size:clamp(.7rem,1.5vw,.85rem);color:var(--gold);
+  text-shadow:0 1px 6px rgba(0,0,0,.8),0 0 10px rgba(21,101,255,.5);
+  text-align:center;line-height:1.2;max-width:150px;overflow-wrap:anywhere;
 }
-@keyframes bubblePop{0%{transform:scale(.85);opacity:0;}100%{transform:scale(1);opacity:1;}}
-#vbBubble::before{
-  content:'';position:absolute;
-  left:-11px;top:14px;
-  width:0;height:0;
-  border-top:7px solid transparent;
-  border-bottom:7px solid transparent;
-  border-right:11px solid rgba(255,215,0,.40);
-}
-#vbBubble::after{
-  content:'';position:absolute;
-  left:-8px;top:15px;
-  width:0;height:0;
-  border-top:6px solid transparent;
-  border-bottom:6px solid transparent;
-  border-right:9px solid rgba(8,12,34,.94);
-}
+#prof-tag{position:fixed;bottom:.6rem;left:50%;transform:translateX(-50%);z-index:600;font-family:'Nunito',sans-serif;font-size:clamp(.65rem,1.8vw,.78rem);color:rgba(255,214,0,.85);font-weight:800;white-space:nowrap;text-shadow:0 1px 6px rgba(0,0,0,.8);pointer-events:none;}
+@media(prefers-reduced-motion:reduce){#fixed-vb-robot{animation:none;}}
 
 /* CONFETTI */
 #confettiCanvas{position:fixed;inset:0;z-index:60;pointer-events:none;}
@@ -271,41 +259,6 @@ header{width:100%;max-width:700px;display:flex;align-items:center;justify-conten
 
   <canvas id="confettiCanvas"></canvas>
 
-  <!-- VANBERTO COMPANION -->
-  <div id="vbCompanion" style="display:none;">
-    <div id="vbChar">
-      <svg viewBox="0 0 80 90" xmlns="http://www.w3.org/2000/svg">
-        <defs>
-          <linearGradient id="vbgC" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#e5f2ff"/><stop offset="100%" stop-color="#bfdbfe"/></linearGradient>
-          <linearGradient id="vvgC" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#22d3ee"/><stop offset="100%" stop-color="#38bdf8"/></linearGradient>
-        </defs>
-        <circle cx="40" cy="40" r="34" fill="rgba(147,197,253,0.22)"/>
-        <rect x="18" y="30" width="44" height="32" rx="14" fill="url(#vbgC)"/>
-        <circle cx="40" cy="46" r="7" fill="#9ca3af"/>
-        <rect x="22" y="10" width="36" height="26" rx="13" fill="url(#vbgC)"/>
-        <rect x="26" y="15" width="28" height="16" rx="8" fill="url(#vvgC)"/>
-        <rect x="26" y="15" width="28" height="16" rx="8" fill="#e5f2ff" opacity="0.9" style="transform-origin:40px 23px;animation:vbBlink 5s ease-in-out infinite;"/>
-        <circle cx="33" cy="23" r="2.5" fill="#0f172a"/><circle cx="47" cy="23" r="2.5" fill="#0f172a"/>
-        <path id="vbMouth" d="M33,28 Q40,34 47,28" stroke="#0f172a" stroke-width="1.8" fill="none" stroke-linecap="round"/>
-        <line x1="40" y1="10" x2="40" y2="4" stroke="#38bdf8" stroke-width="2"/>
-        <circle cx="40" cy="3" r="2.5" fill="#38bdf8"/>
-        <rect x="12" y="34" width="6" height="20" rx="3" fill="#e5e7eb"/>
-        <rect id="vbWaveArm" x="62" y="34" width="6" height="20" rx="3" fill="#e5e7eb" style="transform-origin:65px 34px;"/>
-        <rect x="22" y="58" width="12" height="8" rx="3" fill="#1f2937"/>
-        <rect x="46" y="58" width="12" height="8" rx="3" fill="#1f2937"/>
-        <g id="vbStars" style="opacity:0;transition:opacity .3s;">
-          <text x="4" y="14" font-size="10" fill="#FFD600">⭐</text>
-          <text x="68" y="10" font-size="8" fill="#FFD600">✨</text>
-          <text x="10" y="70" font-size="9" fill="#FFD600">✨</text>
-          <text x="64" y="68" font-size="10" fill="#FFD600">⭐</text>
-        </g>
-      </svg>
-    </div>
-    <div id="vbBubble">
-      <span id="vbBubbleText">Vamos lá! Arrasta para encontrar os países! 🤩</span>
-    </div>
-  </div>
-
   <div id="gridWrap">
     <div id="pauseOverlay">⏸ Jogo em Pausa</div>
     <div id="dirHint" style="font-family:'Boogaloo',cursive;font-size:clamp(11px,2.8vw,13px);
@@ -323,41 +276,18 @@ header{width:100%;max-width:700px;display:flex;align-items:center;justify-conten
 <div class="movl" id="startMod">
   <div class="mbg"></div>
   <div class="mcard">
-    <div style="display:flex;align-items:center;justify-content:center;gap:10px;margin-bottom:10px;">
-      <div style="width:54px;animation:vbf 3s ease-in-out infinite;filter:drop-shadow(0 3px 10px rgba(56,189,248,.35));">
-        <svg viewBox="0 0 80 80" xmlns="http://www.w3.org/2000/svg">
-          <defs>
-            <linearGradient id="vbgS" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#e5f2ff"/><stop offset="100%" stop-color="#bfdbfe"/></linearGradient>
-            <linearGradient id="vvgS" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#22d3ee"/><stop offset="100%" stop-color="#38bdf8"/></linearGradient>
-          </defs>
-          <circle cx="40" cy="40" r="34" fill="rgba(147,197,253,0.22)"/>
-          <rect x="18" y="30" width="44" height="32" rx="14" fill="url(#vbgS)"/>
-          <circle cx="40" cy="46" r="7" fill="#9ca3af"/>
-          <rect x="22" y="10" width="36" height="26" rx="13" fill="url(#vbgS)"/>
-          <rect x="26" y="15" width="28" height="16" rx="8" fill="url(#vvgS)"/>
-          <rect x="26" y="15" width="28" height="16" rx="8" fill="#e5f2ff" opacity="0.9" style="transform-origin:40px 23px;animation:vbBlink 5s ease-in-out infinite;"/>
-          <circle cx="33" cy="23" r="2.5" fill="#0f172a"/><circle cx="47" cy="23" r="2.5" fill="#0f172a"/>
-          <line x1="40" y1="10" x2="40" y2="4" stroke="#38bdf8" stroke-width="2"/>
-          <circle cx="40" cy="3" r="2.5" fill="#38bdf8"/>
-          <rect x="12" y="34" width="6" height="20" rx="3" fill="#e5e7eb"/>
-          <rect x="62" y="34" width="6" height="20" rx="3" fill="#e5e7eb" style="transform-origin:65px 44px;animation:waveVB 1.5s ease-in-out infinite;"/>
-          <rect x="22" y="58" width="12" height="8" rx="3" fill="#1f2937"/>
-          <rect x="46" y="58" width="12" height="8" rx="3" fill="#1f2937"/>
-        </svg>
-      </div>
-      <div style="background:rgba(6,10,30,.90);border:1.5px solid rgba(255,215,0,.38);border-radius:14px;padding:8px 12px;font-family:'Boogaloo',cursive;color:#FFD600;font-size:13px;max-width:180px;line-height:1.45;">
-        Olá! Sou o VanBerto's<br>Encontra os países<br>da União Europeia!
-      </div>
-    </div>
     <h2>VanBerto's — Sopa de Letras</h2>
     <p>Encontra os nomes dos países<br>da União Europeia escondidos<br>na grelha de letras!</p>
+    <div class="name-row">
+      <label for="playerName">O teu nome:</label>
+      <input type="text" id="playerName" maxlength="22" placeholder="Escreve o teu nome…" autocomplete="off" lang="pt-PT" spellcheck="true" inputmode="text">
+    </div>
     <div class="diff-row">
       <button class="dbtn on" id="d1" onclick="setDiff(1)">😊 Fácil<br><small>10 palavras · 10×10<br>→ e ↓ apenas</small></button>
       <button class="dbtn" id="d2" onclick="setDiff(2)">⚡ Normal<br><small>15 palavras · 15×15<br>→ ↓ e diagonal ↘</small></button>
       <button class="dbtn" id="d3" onclick="setDiff(3)">🔥 Difícil<br><small>20 palavras · 18×18<br>todas as direções</small></button>
     </div>
     <button class="bplay" onclick="startGame()">🔍 Jogar!</button>
-    <p class="credit">Professora: Vanda Várzea</p>
   </div>
 </div>
 
@@ -365,32 +295,6 @@ header{width:100%;max-width:700px;display:flex;align-items:center;justify-conten
 <div class="movl" id="endMod" style="display:none;">
   <div class="mbg"></div>
   <div class="mcard">
-    <div style="display:flex;align-items:center;justify-content:center;gap:10px;margin-bottom:8px;">
-      <div id="endVb" style="width:54px;filter:drop-shadow(0 3px 10px rgba(56,189,248,.35));animation:vbd .85s ease infinite;">
-        <svg viewBox="0 0 80 80" xmlns="http://www.w3.org/2000/svg">
-          <defs>
-            <linearGradient id="vbgE" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#e5f2ff"/><stop offset="100%" stop-color="#bfdbfe"/></linearGradient>
-            <linearGradient id="vvgE" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#22d3ee"/><stop offset="100%" stop-color="#38bdf8"/></linearGradient>
-          </defs>
-          <circle cx="40" cy="40" r="34" fill="rgba(147,197,253,0.22)"/>
-          <rect x="18" y="30" width="44" height="32" rx="14" fill="url(#vbgE)"/>
-          <circle cx="40" cy="46" r="7" fill="#9ca3af"/>
-          <rect x="22" y="10" width="36" height="26" rx="13" fill="url(#vbgE)"/>
-          <rect x="26" y="15" width="28" height="16" rx="8" fill="url(#vvgE)"/>
-          <rect x="26" y="15" width="28" height="16" rx="8" fill="#e5f2ff" opacity="0.9" style="transform-origin:40px 23px;animation:vbBlink 5s ease-in-out infinite;"/>
-          <circle cx="33" cy="23" r="2.5" fill="#0f172a"/><circle cx="47" cy="23" r="2.5" fill="#0f172a"/>
-          <line x1="40" y1="10" x2="40" y2="4" stroke="#38bdf8" stroke-width="2"/>
-          <circle cx="40" cy="3" r="2.5" fill="#38bdf8"/>
-          <rect x="12" y="34" width="6" height="20" rx="3" fill="#e5e7eb"/>
-          <rect x="62" y="34" width="6" height="20" rx="3" fill="#e5e7eb" style="transform-origin:65px 44px;animation:waveVB 1.5s ease-in-out infinite;"/>
-          <rect x="22" y="58" width="12" height="8" rx="3" fill="#1f2937"/>
-          <rect x="46" y="58" width="12" height="8" rx="3" fill="#1f2937"/>
-        </svg>
-      </div>
-      <div id="endVbMsg" style="background:rgba(6,10,30,.90);border:1.5px solid rgba(255,215,0,.38);border-radius:14px;padding:8px 12px;font-family:'Boogaloo',cursive;color:#FFD600;font-size:13px;max-width:180px;line-height:1.45;">
-        Parabéns! 🎉
-      </div>
-    </div>
     <h2 id="endTitle">Parabéns!</h2>
     <div class="stars-row" id="starsRow">
       <span class="star" id="star1">⭐</span>
@@ -401,9 +305,16 @@ header{width:100%;max-width:700px;display:flex;align-items:center;justify-conten
     <p id="endTxt"></p>
     <button class="bplay" onclick="startGame()">🔄 Jogar outra vez</button>
     <br><button class="bsec" onclick="showStart()">🏠 Início</button>
-    <p class="credit">Professora: Vanda Várzea</p>
   </div>
 </div>
+
+<!-- ═══ ROBOT FLUTUANTE FIXO ═══ -->
+<div id="fixed-robot-wrap">
+  <div id="fixed-bubble" role="status" aria-live="polite"></div>
+  <canvas id="fixed-vb-robot" width="96" height="96" role="button" tabindex="0" aria-label="VanBerto's — clica para falar"></canvas>
+  <div id="fixed-robot-name">👤 Herói da UE</div>
+</div>
+<div id="prof-tag">© Prof.ª Vanda Várzea</div>
 
 <script>
 // ─── DADOS ───────────────────────────────────────────────────────
@@ -458,13 +369,13 @@ let diff=1, gridSize=12, words=[], grid=[], placed=[], foundWords=[];
 let selecting=false, startCell=null, currentCells=[], timerInterval=null, elapsed=0;
 let hintsLeft=3;
 let paused=false;
+let playerName='Herói da UE';
 
 function setDiff(d){diff=d;[1,2,3].forEach(i=>document.getElementById('d'+i).classList.toggle('on',i===d));}
 function showStart(){
   stopTimer();
   document.getElementById('startMod').style.display='flex';
   document.getElementById('endMod').style.display='none';
-  document.getElementById('vbCompanion').style.display='none';
 }
 
 // ─── TIMER ───────────────────────────────────────────────────────
@@ -703,6 +614,8 @@ function bindEvents(){
 
 // ─── JOGO ─────────────────────────────────────────────────────────
 function startGame(){
+  playerName=(document.getElementById('playerName').value||'').trim()||'Herói da UE';
+  document.getElementById('fixed-robot-name').textContent='👤 '+playerName;
   document.getElementById('startMod').style.display='none';
   document.getElementById('endMod').style.display='none';
   const hints=['😊 Palavras só na horizontal → e vertical ↓',
@@ -721,14 +634,11 @@ function startGame(){
   renderWords();
   bindEvents();
   startTimer();
-  // show VanBerto companion
-  document.getElementById('vbCompanion').style.display='flex';
-  vbSetMsg(vbRandom(VB_MSGS_START));
+  vbSetMsg('Olá, '+playerName+'! Arrasta para encontrar os países! 🤩');
 }
 
 function endGame(){
   stopTimer();
-  document.getElementById('vbCompanion').style.display='none';
   const m=Math.floor(elapsed/60),s=elapsed%60;
   const timeStr=String(m).padStart(2,'0')+':'+String(s).padStart(2,'0');
   document.getElementById('endTime').textContent=timeStr;
@@ -749,8 +659,8 @@ function endGame(){
     'Incrível! 🌟<br>Resultado<br>perfeito!'];
   
   document.getElementById('endTitle').textContent=titles[stars];
-  document.getElementById('endTxt').textContent='Encontraste todas as '+words.length+' palavras em '+timeStr+'!';
-  document.getElementById('endVbMsg').innerHTML=vbMsgs[stars];
+  document.getElementById('endTxt').textContent=playerName+', encontraste todas as '+words.length+' palavras em '+timeStr+'!';
+  vbSetMsg('Parabéns, '+playerName+'! 🌟');
   document.getElementById('endMod').style.display='flex';
   launchConfetti();
 }
@@ -781,28 +691,9 @@ const VB_MSGS_ALMOST=[
 
 function vbRandom(arr){ return arr[Math.floor(Math.random()*arr.length)]; }
 
-function vbSetMsg(txt){
-  const bubble=document.getElementById('vbBubbleText');
-  bubble.textContent=txt;
-  const parent=document.getElementById('vbBubble');
-  parent.style.animation='none';
-  parent.offsetHeight;
-  parent.style.animation='bubblePop .35s ease-out';
-}
+function vbSetMsg(txt){ showBub(txt); }
 
-function vbCelebrate(){
-  const char=document.getElementById('vbChar');
-  const arm=document.getElementById('vbWaveArm');
-  const stars=document.getElementById('vbStars');
-  char.style.animation='vbCelebrate .7s ease';
-  arm.style.animation='vbWaveHand .6s ease-in-out 2';
-  stars.style.opacity='1';
-  setTimeout(()=>{
-    char.style.animation='vbIdle 3s ease-in-out infinite';
-    arm.style.animation='';
-    stars.style.opacity='0';
-  },1800);
-}
+function vbCelebrate(){ vbJump(); }
 
 function vbOnWordFound(){
   const total=words.length;
@@ -922,6 +813,227 @@ function launchConfetti(){
 // iniciar
 showStart();
 window.addEventListener('resize', ()=>{ if(grid.length) renderGrid(); });
+</script>
+<script>
+// ── VANBERTO'S ATUAL (robô fixo) ──────────────────────────────────────────
+function rrVan(ctx,x,y,w,h,r){
+  const rr=Math.min(r,w/2,h/2);
+  ctx.beginPath();ctx.moveTo(x+rr,y);ctx.arcTo(x+w,y,x+w,y+h,rr);ctx.arcTo(x+w,y+h,x,y+h,rr);ctx.arcTo(x,y+h,x,y,rr);ctx.arcTo(x,y,x+w,y,rr);ctx.closePath();
+}
+function cfVan(ctx,x,y,r,color){ctx.beginPath();ctx.arc(x,y,r,0,Math.PI*2);ctx.fillStyle=color;ctx.fill();}
+
+function drawVBAtual(ctx,blink,step,armsUp){
+  const w=96,h=96;
+  ctx.clearRect(0,0,w,h);
+  ctx.lineJoin="round"; ctx.lineCap="round";
+  ctx.save(); ctx.translate(0,6);
+  const NAVY="#16233e", NAVY2="#26365a", OUT="#101a30";
+  function white(x0,y0,x1,y1){const g=ctx.createLinearGradient(x0,y0,x1,y1);g.addColorStop(0,"#ffffff");g.addColorStop(0.55,"#e6edf7");g.addColorStop(1,"#b4c4dc");return g;}
+
+  const LIFT=8, STRIDE=3;
+  let lTop=70, rTop=70, lDX=0, rDX=0;
+  if(step===0){ lTop=70-LIFT; lDX=STRIDE; rDX=-STRIDE; }
+  else if(step===1){ rTop=70-LIFT; rDX=STRIDE; lDX=-STRIDE; }
+  function leg(cx,top){
+    rrVan(ctx,cx-5,top,10,11,4.5); ctx.fillStyle=white(cx-5,top,cx+5,top); ctx.fill();
+    ctx.lineWidth=2.6; ctx.strokeStyle=OUT; ctx.stroke();
+    const fy=top+9;
+    rrVan(ctx,cx-6.5,fy,13,9,4); ctx.fillStyle=NAVY; ctx.fill();
+    ctx.lineWidth=2.6; ctx.strokeStyle=OUT; ctx.stroke();
+    rrVan(ctx,cx-6.5,fy+2,13,2.4,1.2); ctx.fillStyle="rgba(255,255,255,0.85)"; ctx.fill();
+    cfVan(ctx,cx-2.5,fy+4.5,1.4,"rgba(255,255,255,0.5)");
+  }
+  leg(41+lDX,lTop); leg(55+rDX,rTop);
+
+  const ARM_SWING = 0.24;
+  const JUMP_RAISE = 2.9;
+  let lArmSwing = 0, rArmSwing = 0;
+  if(armsUp){ lArmSwing = JUMP_RAISE; rArmSwing = -JUMP_RAISE; }
+  else if(step===0){ lArmSwing=-ARM_SWING; rArmSwing=ARM_SWING; }
+  else if(step===1){ lArmSwing=ARM_SWING; rArmSwing=-ARM_SWING; }
+  function arm(sx,swing){
+    ctx.save();
+    const px=sx+4.5, py=52;
+    ctx.translate(px,py); ctx.rotate(swing); ctx.translate(-px,-py);
+    rrVan(ctx,sx,52,9,13,4.5); ctx.fillStyle=white(sx,52,sx+9,52); ctx.fill();
+    ctx.lineWidth=2.6; ctx.strokeStyle=OUT; ctx.stroke();
+    const hx=sx+4.5, hy=67;
+    cfVan(ctx,hx,hy,5,NAVY);
+    ctx.lineWidth=2.3; ctx.strokeStyle=OUT; ctx.beginPath(); ctx.arc(hx,hy,5,0,Math.PI*2); ctx.stroke();
+    cfVan(ctx,hx-2,hy+1.6,1.4,NAVY2); cfVan(ctx,hx+0.5,hy+2.4,1.4,NAVY2); cfVan(ctx,hx+2.5,hy+1.6,1.4,NAVY2);
+    ctx.restore();
+  }
+  arm(17,lArmSwing); arm(70,rArmSwing);
+
+  rrVan(ctx,26,44,44,32,15); ctx.fillStyle=white(28,46,68,46); ctx.fill();
+  ctx.save(); rrVan(ctx,26,44,44,32,15); ctx.clip();
+  const wg=ctx.createLinearGradient(0,64,0,76); wg.addColorStop(0,"rgba(22,35,62,0)"); wg.addColorStop(0.4,"#1c2c4c"); wg.addColorStop(1,"#142038");
+  ctx.fillStyle=wg; ctx.fillRect(26,62,44,16);
+  ctx.strokeStyle="rgba(16,26,48,0.6)"; ctx.lineWidth=2; ctx.beginPath(); ctx.moveTo(28,64); ctx.lineTo(68,64); ctx.stroke();
+  ctx.fillStyle="rgba(255,255,255,0.5)"; ctx.beginPath(); ctx.ellipse(36,52,9,5.5,-0.5,0,Math.PI*2); ctx.fill();
+  ctx.restore();
+  ctx.lineWidth=3; ctx.strokeStyle=OUT; rrVan(ctx,26,44,44,32,15); ctx.stroke();
+
+  cfVan(ctx,48,56,8,NAVY);
+  ctx.lineWidth=2.5; ctx.strokeStyle=OUT; ctx.beginPath(); ctx.arc(48,56,8,0,Math.PI*2); ctx.stroke();
+  const dome=ctx.createRadialGradient(45.5,53.5,1,48,56,7); dome.addColorStop(0,"#aebccf"); dome.addColorStop(0.6,"#5a6a85"); dome.addColorStop(1,"#2b3a57");
+  ctx.fillStyle=dome; ctx.beginPath(); ctx.arc(48,56,5.7,0,Math.PI*2); ctx.fill();
+  cfVan(ctx,46,53.8,1.5,"rgba(255,255,255,0.85)");
+
+  function pod(cx){
+    cfVan(ctx,cx,32,6,NAVY);
+    ctx.lineWidth=2.3; ctx.strokeStyle=OUT; ctx.beginPath(); ctx.arc(cx,32,6,0,Math.PI*2); ctx.stroke();
+    cfVan(ctx,cx,32,2.8,NAVY2); cfVan(ctx,cx-0.8,31,1,"rgba(255,255,255,0.6)");
+  }
+  pod(25); pod(71);
+
+  ctx.fillStyle=NAVY; ctx.beginPath(); ctx.moveTo(45,16); ctx.lineTo(51,16); ctx.lineTo(49.2,8); ctx.lineTo(46.8,8); ctx.closePath(); ctx.fill();
+  const halo=ctx.createRadialGradient(48,5,1,48,5,11); halo.addColorStop(0,"rgba(90,200,255,0.55)"); halo.addColorStop(1,"rgba(90,200,255,0)");
+  ctx.fillStyle=halo; ctx.beginPath(); ctx.arc(48,5,11,0,Math.PI*2); ctx.fill();
+  const bg=ctx.createRadialGradient(46.3,3.5,0.5,48,5,5.5); bg.addColorStop(0,"#e6f7ff"); bg.addColorStop(0.4,"#48b4ff"); bg.addColorStop(1,"#1670d8");
+  ctx.fillStyle=bg; ctx.beginPath(); ctx.arc(48,5,5.5,0,Math.PI*2); ctx.fill();
+  cfVan(ctx,46.2,3.4,1.6,"#ffffff");
+
+  rrVan(ctx,26,14,44,34,17); ctx.fillStyle=white(28,15,68,15); ctx.fill();
+  ctx.lineWidth=3; ctx.strokeStyle=OUT; ctx.stroke();
+  ctx.save(); rrVan(ctx,26,14,44,34,17); ctx.clip();
+  ctx.fillStyle="rgba(255,255,255,0.6)"; ctx.beginPath(); ctx.ellipse(38,19,10,4,-0.5,0,Math.PI*2); ctx.fill(); ctx.restore();
+
+  rrVan(ctx,30,20,36,23,12); ctx.fillStyle=NAVY; ctx.fill();
+  rrVan(ctx,32.5,22,31,19,10);
+  const vg=ctx.createLinearGradient(0,22,0,41); vg.addColorStop(0,"#7fd4ff"); vg.addColorStop(0.5,"#2a9bf0"); vg.addColorStop(1,"#1366c6");
+  ctx.fillStyle=vg; ctx.fill();
+  ctx.save(); rrVan(ctx,32.5,22,31,19,10); ctx.clip();
+  ctx.fillStyle="rgba(255,255,255,0.45)"; ctx.beginPath(); ctx.ellipse(42,25,9,3.5,-0.4,0,Math.PI*2); ctx.fill(); ctx.restore();
+
+  if(!blink){
+    ctx.fillStyle="#0a0f1c";
+    ctx.beginPath(); ctx.ellipse(41,30,3.3,4,0,0,Math.PI*2); ctx.fill();
+    ctx.beginPath(); ctx.ellipse(55,30,3.3,4,0,0,Math.PI*2); ctx.fill();
+    cfVan(ctx,42.3,28.4,1.5,"#fff"); cfVan(ctx,39.9,31,0.8,"#fff");
+    cfVan(ctx,56.3,28.4,1.5,"#fff"); cfVan(ctx,53.9,31,0.8,"#fff");
+  } else if(blink==="wink"){
+    ctx.fillStyle="#0a0f1c";
+    ctx.beginPath(); ctx.ellipse(41,30,3.3,4,0,0,Math.PI*2); ctx.fill();
+    cfVan(ctx,42.3,28.4,1.5,"#fff"); cfVan(ctx,39.9,31,0.8,"#fff");
+    ctx.lineWidth=3; ctx.strokeStyle="#0a0f1c"; ctx.lineCap="round";
+    ctx.beginPath(); ctx.arc(55,31,3.5,0.15*Math.PI,0.85*Math.PI); ctx.stroke();
+  } else if(blink==="happy"){
+    ctx.lineWidth=3.2; ctx.strokeStyle="#0a0f1c"; ctx.lineCap="round";
+    ctx.beginPath(); ctx.arc(41,31,3.9,0.10*Math.PI,0.90*Math.PI); ctx.stroke();
+    ctx.beginPath(); ctx.arc(55,31,3.9,0.10*Math.PI,0.90*Math.PI); ctx.stroke();
+    cfVan(ctx,33.5,35.5,3,"rgba(255,120,120,0.55)");
+    cfVan(ctx,62.5,35.5,3,"rgba(255,120,120,0.55)");
+  } else if(blink==="sad"){
+    ctx.strokeStyle="#0a0f1c"; ctx.lineWidth=2.3; ctx.lineCap="round";
+    ctx.beginPath(); ctx.moveTo(37,24); ctx.lineTo(44.5,27); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(59,24); ctx.lineTo(51.5,27); ctx.stroke();
+    ctx.fillStyle="#0a0f1c";
+    ctx.beginPath(); ctx.ellipse(41,32,2.8,3.1,0,0,Math.PI*2); ctx.fill();
+    ctx.beginPath(); ctx.ellipse(55,32,2.8,3.1,0,0,Math.PI*2); ctx.fill();
+    cfVan(ctx,42,30.7,1.1,"#fff"); cfVan(ctx,56,30.7,1.1,"#fff");
+    ctx.fillStyle="#6fd0ff";
+    ctx.beginPath();
+    ctx.moveTo(56,35); ctx.quadraticCurveTo(59,40,56,43.5); ctx.quadraticCurveTo(53,40,56,35);
+    ctx.closePath(); ctx.fill();
+  } else {
+    ctx.lineWidth=3; ctx.strokeStyle="#0a0f1c";
+    ctx.beginPath(); ctx.arc(41,31,3.5,0.15*Math.PI,0.85*Math.PI); ctx.stroke();
+    ctx.beginPath(); ctx.arc(55,31,3.5,0.15*Math.PI,0.85*Math.PI); ctx.stroke();
+  }
+  ctx.fillStyle="#0a0f1c";
+  if(blink==="wink"){
+    ctx.beginPath(); ctx.ellipse(48,36,5.6,3.6,0,0,Math.PI); ctx.fill();
+    ctx.fillStyle="#ff7a7a";
+    ctx.beginPath(); ctx.ellipse(48,37.6,2.9,1.7,0,0,Math.PI); ctx.fill();
+  } else if(blink==="happy"){
+    ctx.beginPath(); ctx.ellipse(48,36,6.2,4.2,0,0,Math.PI); ctx.fill();
+    ctx.fillStyle="#ff7a7a";
+    ctx.beginPath(); ctx.ellipse(48,38,3.2,1.9,0,0,Math.PI); ctx.fill();
+  } else if(blink==="sad"){
+    ctx.strokeStyle="#0a0f1c"; ctx.lineWidth=2.4; ctx.lineCap="round";
+    ctx.beginPath(); ctx.arc(48,40,4.2,Math.PI,Math.PI*2); ctx.stroke();
+  } else {
+    ctx.beginPath(); ctx.ellipse(48,36,4.6,3.2,0,0,Math.PI); ctx.fill();
+    ctx.fillStyle="#ff7a7a";
+    ctx.beginPath(); ctx.ellipse(48,37.4,2.4,1.5,0,0,Math.PI); ctx.fill();
+  }
+  ctx.restore();
+}
+
+
+let bubT=null;
+function showBub(msg){
+  const b=document.getElementById('fixed-bubble');
+  b.textContent=msg;b.classList.add('show');
+  clearTimeout(bubT);bubT=setTimeout(()=>b.classList.remove('show'),3500);
+}
+const vbRobot=document.getElementById('fixed-vb-robot');
+const vbCtx=vbRobot.getContext('2d');
+const DPR=Math.min(window.devicePixelRatio||1,3);
+vbRobot.width=96*DPR;vbRobot.height=96*DPR;vbCtx.scale(DPR,DPR);
+const REDUCED=window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+let vbBusy=false;
+function vbSetFrame(blink,step,armsUp){ drawVBAtual(vbCtx,blink,step,armsUp); }
+vbSetFrame(false,-1,false);
+function vbBlink(){
+  if(vbBusy)return;
+  vbSetFrame(true,-1,false);
+  setTimeout(()=>{ if(!vbBusy) vbSetFrame(false,-1,false); },180);
+}
+function vbWalk(steps,speed){
+  steps=steps||6;speed=speed||170;
+  if(vbBusy)return;
+  vbBusy=true;let i=0;
+  const iv=setInterval(()=>{
+    vbSetFrame(false,i%2===0?0:1,false);i++;
+    if(i>=steps){clearInterval(iv);vbSetFrame(false,-1,false);vbBusy=false;}
+  },speed);
+}
+function vbJump(){
+  if(vbBusy)return;
+  vbBusy=true;
+  vbRobot.classList.remove('bounce');void vbRobot.offsetWidth;vbRobot.classList.add('bounce');
+  vbSetFrame('happy',-1,true);
+  setTimeout(()=>{vbSetFrame(false,-1,false);vbBusy=false;},700);
+}
+setInterval(()=>{
+  if(vbBusy||document.hidden||REDUCED)return;
+  const r=Math.random();
+  if(r<0.18)vbJump();else if(r<0.5)vbWalk();else vbBlink();
+},3600);
+
+const MSGS=[
+  'Encontra todos os países! 🔍',
+  'Vamos lá, és incrível! 🌟',
+  'Não desistas, consegues! 💪',
+  'Que tal usar uma dica? 💡',
+  'Arrasta pelas letras! ✋',
+  'A UE tem 27 países! 🇪🇺',
+  'Já estás quase! Força! 🚀',
+  'Encontra o próximo! 🎯',
+];
+function vbTalk(){vbJump();showBub(MSGS[Math.floor(Math.random()*MSGS.length)]);}
+vbRobot.addEventListener('click',vbTalk);
+vbRobot.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();vbTalk();}});
+
+// nome no robô enquanto se escreve, e Enter para começar
+const nameInp=document.getElementById('playerName');
+nameInp.addEventListener('input',()=>{
+  document.getElementById('fixed-robot-name').textContent='👤 '+(nameInp.value.trim()||'Herói da UE');
+});
+nameInp.addEventListener('keydown',e=>{if(e.key==='Enter')startGame();});
+
+// incentivo periódico durante o jogo
+setInterval(()=>{
+  const playing=document.getElementById('startMod').style.display==='none'&&document.getElementById('endMod').style.display==='none';
+  if(playing&&!paused&&words.length>0&&foundWords.length<words.length){
+    const enc=['Força! Já encontraste '+foundWords.length+'! 💪','Continua! Estás a arrasar! 🌟','Consegues! Não desistas! 🎯'];
+    showBub(enc[Math.floor(Math.random()*enc.length)]);
+  }
+},18000);
+
+setTimeout(()=>showBub('Olá! Sou o VanBerto\'s! Encontra os países da UE! 🇪🇺'),900);
 </script>
 </body>
 </html>
