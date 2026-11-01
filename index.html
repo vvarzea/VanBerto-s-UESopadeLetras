@@ -224,19 +224,72 @@ header{width:100%;max-width:700px;display:flex;align-items:center;justify-conten
 @keyframes starPop{0%{transform:scale(0) rotate(-30deg);opacity:0;}
   60%{transform:scale(1.3) rotate(5deg);}100%{transform:scale(1) rotate(0);opacity:1;}}
 
-/* colors for found words */
-.c0{background:rgba(255,45,85,.25)!important;border-color:rgba(255,45,85,.5)!important;}
-.c1{background:rgba(21,101,255,.25)!important;border-color:rgba(21,101,255,.5)!important;}
-.c2{background:rgba(0,200,83,.22)!important;border-color:rgba(0,200,83,.5)!important;}
-.c3{background:rgba(255,214,0,.22)!important;border-color:rgba(255,214,0,.5)!important;}
-.c4{background:rgba(156,39,176,.28)!important;border-color:rgba(156,39,176,.5)!important;}
-.c5{background:rgba(255,152,0,.25)!important;border-color:rgba(255,152,0,.5)!important;}
-.c6{background:rgba(0,188,212,.22)!important;border-color:rgba(0,188,212,.5)!important;}
-.c7{background:rgba(233,30,99,.25)!important;border-color:rgba(233,30,99,.5)!important;}
-.c8{background:rgba(76,175,80,.22)!important;border-color:rgba(76,175,80,.5)!important;}
-.c9{background:rgba(103,58,183,.28)!important;border-color:rgba(103,58,183,.5)!important;}
-.c10{background:rgba(255,87,34,.25)!important;border-color:rgba(255,87,34,.5)!important;}
-.c11{background:rgba(0,150,136,.22)!important;border-color:rgba(0,150,136,.5)!important;}
+/* ═══ CORES DAS PALAVRAS ENCONTRADAS (vivas e bem diferentes) ═══ */
+.c0{--wc:#ff1744;--wt:#fff;}
+.c1{--wc:#2979ff;--wt:#fff;}
+.c2{--wc:#00c853;--wt:#fff;}
+.c3{--wc:#ffd600;--wt:#1a1400;}
+.c4{--wc:#d500f9;--wt:#fff;}
+.c5{--wc:#ff6d00;--wt:#fff;}
+.c6{--wc:#00e5ff;--wt:#00262b;}
+.c7{--wc:#ff80ab;--wt:#3a0016;}
+.c8{--wc:#c6ff00;--wt:#1b2600;}
+.c9{--wc:#3d5afe;--wt:#fff;}
+.c10{--wc:#ff8a65;--wt:#3a1000;}
+.c11{--wc:#00bfa5;--wt:#fff;}
+
+.cell.found{
+  background:var(--wc)!important;
+  background:linear-gradient(145deg,var(--wc),color-mix(in srgb,var(--wc) 72%,#000))!important;
+  color:var(--wt)!important;border-color:rgba(255,255,255,.55)!important;
+  box-shadow:0 0 10px color-mix(in srgb,var(--wc) 70%,transparent),inset 0 1px 0 rgba(255,255,255,.35);
+  text-shadow:0 1px 2px rgba(0,0,0,.25);
+}
+.cell.found.word-highlight{background:#fff!important;color:#000!important;}
+.cell.pop{animation:cellPop .55s cubic-bezier(.34,1.56,.64,1) backwards;}
+@keyframes cellPop{0%{transform:scale(.3) rotate(-25deg);filter:brightness(2.2);}
+  60%{transform:scale(1.3) rotate(6deg);}100%{transform:scale(1) rotate(0);filter:none;}}
+
+.word-chip.found:not(.active-highlight){
+  background:var(--wc)!important;
+  background:linear-gradient(145deg,var(--wc),color-mix(in srgb,var(--wc) 72%,#000))!important;
+  border-color:rgba(255,255,255,.6)!important;color:var(--wt)!important;
+  text-decoration:none!important;opacity:1!important;cursor:pointer;
+  box-shadow:0 0 12px color-mix(in srgb,var(--wc) 60%,transparent);
+}
+.word-chip.found::before{content:'✓ ';}
+.word-chip.found:active{transform:scale(.94);}
+
+/* ═══ CARTÃO "SABIAS QUE…?" ═══ */
+#factCard{
+  width:100%;max-width:700px;display:flex;align-items:center;gap:14px;
+  background:var(--card);border:2px dashed rgba(255,255,255,.18);
+  border-radius:20px;padding:14px 18px;min-height:92px;
+  box-shadow:0 8px 32px rgba(0,0,0,.4);backdrop-filter:blur(14px);
+  color:rgba(255,255,255,.55);font-size:clamp(12px,3.2vw,15px);
+}
+#factCard.show{
+  border:3px solid var(--wc);color:#fff;
+  background:#0c1030;
+  background:linear-gradient(135deg,color-mix(in srgb,var(--wc) 28%,#0c1030),rgba(10,12,36,.97));
+  box-shadow:0 0 28px color-mix(in srgb,var(--wc) 45%,transparent),0 8px 32px rgba(0,0,0,.45);
+  animation:factIn .55s cubic-bezier(.34,1.56,.64,1);
+}
+@keyframes factIn{0%{opacity:0;transform:translateY(24px) scale(.94);}100%{opacity:1;transform:none;}}
+.fact-flag{font-size:clamp(44px,12vw,68px);line-height:1;flex-shrink:0;
+  filter:drop-shadow(0 4px 8px rgba(0,0,0,.5));}
+.fact-body{flex:1;min-width:0;}
+.fact-title{font-family:'Boogaloo',cursive;font-size:clamp(17px,4.6vw,24px);
+  color:var(--gold);text-shadow:0 0 14px rgba(255,214,0,.4);margin-bottom:4px;}
+.fact-country{font-family:'Boogaloo',cursive;color:var(--wc);
+  filter:brightness(1.25);font-size:1.05em;}
+.fact-line{font-family:'Nunito',sans-serif;font-weight:700;
+  font-size:clamp(13px,3.5vw,17px);line-height:1.5;color:rgba(255,255,255,.88);}
+.fact-line b{color:#fff;font-weight:900;background:rgba(255,255,255,.12);
+  padding:1px 8px;border-radius:8px;}
+.fact-note{font-size:.82em;font-weight:700;color:rgba(255,255,255,.6);}
+.fact-badge{display:inline-block;margin-left:6px;font-family:'Boogaloo',cursive;
+  font-size:.85em;background:var(--gold);color:#1a1400;padding:1px 10px;border-radius:12px;}
 
 @media(max-width:480px){
   .cell{border-radius:4px;}
@@ -271,6 +324,8 @@ header{width:100%;max-width:700px;display:flex;align-items:center;justify-conten
     <h3>🔍 Encontra os países:</h3>
     <div id="wordList"></div>
   </div>
+
+  <div id="factCard"></div>
 </div>
 
 <!-- MODAL INÍCIO -->
@@ -320,35 +375,75 @@ header{width:100%;max-width:700px;display:flex;align-items:center;justify-conten
 <script>
 // ─── DADOS ───────────────────────────────────────────────────────
 const ALL_WORDS = [
-  'PORTUGAL','ESPANHA','FRANCA','ALEMANHA','ITALIA','BELGICA','POLONIA',
-  'SUECIA','AUSTRIA','GRECIA','ROMENIA','HUNGRIA','CROACIA','BULGARIA',
-  'ESLOVENIA','LITUANIA','LETONIA','ESTONIA','MALTA','CHIPRE',
-  'LUXEMBURGO','IRLANDA','FINLANDIA','DINAMARCA','ESLOVAQUIA'
+  'PORTUGAL','ESPANHA','FRANÇA','ALEMANHA','ITÁLIA','BÉLGICA','POLÓNIA',
+  'SUÉCIA','ÁUSTRIA','GRÉCIA','ROMÉNIA','HUNGRIA','CROÁCIA','BULGÁRIA',
+  'ESLOVÉNIA','LITUÂNIA','LETÓNIA','ESTÓNIA','MALTA','CHIPRE',
+  'LUXEMBURGO','IRLANDA','FINLÂNDIA','DINAMARCA','ESLOVÁQUIA'
 ];
 
 const DISPLAY = {
-  'PORTUGAL':'Portugal','ESPANHA':'Espanha','FRANCA':'França',
-  'ALEMANHA':'Alemanha','ITALIA':'Itália','BELGICA':'Bélgica',
-  'POLONIA':'Polónia','SUECIA':'Suécia','AUSTRIA':'Áustria',
-  'GRECIA':'Grécia','ROMENIA':'Roménia','HUNGRIA':'Hungria',
-  'CROACIA':'Croácia','BULGARIA':'Bulgária','ESLOVENIA':'Eslovénia',
-  'LITUANIA':'Lituânia','LETONIA':'Letónia','ESTONIA':'Estónia',
+  'PORTUGAL':'Portugal','ESPANHA':'Espanha','FRANÇA':'França',
+  'ALEMANHA':'Alemanha','ITÁLIA':'Itália','BÉLGICA':'Bélgica',
+  'POLÓNIA':'Polónia','SUÉCIA':'Suécia','ÁUSTRIA':'Áustria',
+  'GRÉCIA':'Grécia','ROMÉNIA':'Roménia','HUNGRIA':'Hungria',
+  'CROÁCIA':'Croácia','BULGÁRIA':'Bulgária','ESLOVÉNIA':'Eslovénia',
+  'LITUÂNIA':'Lituânia','LETÓNIA':'Letónia','ESTÓNIA':'Estónia',
   'MALTA':'Malta','CHIPRE':'Chipre','LUXEMBURGO':'Luxemburgo',
-  'IRLANDA':'Irlanda','FINLANDIA':'Finlândia','DINAMARCA':'Dinamarca',
-  'ESLOVAQUIA':'Eslováquia'
+  'IRLANDA':'Irlanda','FINLÂNDIA':'Finlândia','DINAMARCA':'Dinamarca',
+  'ESLOVÁQUIA':'Eslováquia'
 };
+
+// ─── CURIOSIDADES: [código ISO, capital, ano de entrada na UE] ───
+const FACTS = {
+  'PORTUGAL':['PT','Lisboa',1986],'ESPANHA':['ES','Madrid',1986],
+  'FRANÇA':['FR','Paris',1958],'ALEMANHA':['DE','Berlim',1958],
+  'ITÁLIA':['IT','Roma',1958],'BÉLGICA':['BE','Bruxelas',1958],
+  'LUXEMBURGO':['LU','Luxemburgo',1958],'POLÓNIA':['PL','Varsóvia',2004],
+  'SUÉCIA':['SE','Estocolmo',1995],'ÁUSTRIA':['AT','Viena',1995],
+  'GRÉCIA':['GR','Atenas',1981],'ROMÉNIA':['RO','Bucareste',2007],
+  'HUNGRIA':['HU','Budapeste',2004],'CROÁCIA':['HR','Zagreb',2013],
+  'BULGÁRIA':['BG','Sófia',2007],'ESLOVÉNIA':['SI','Liubliana',2004],
+  'LITUÂNIA':['LT','Vílnius',2004],'LETÓNIA':['LV','Riga',2004],
+  'ESTÓNIA':['EE','Talim',2004],'MALTA':['MT','Valeta',2004],
+  'CHIPRE':['CY','Nicósia',2004],'IRLANDA':['IE','Dublin',1973],
+  'FINLÂNDIA':['FI','Helsínquia',1995],'DINAMARCA':['DK','Copenhaga',1973],
+  'ESLOVÁQUIA':['SK','Bratislava',2004]
+};
+const FACT_PLACEHOLDER='<div class="fact-flag">🇪🇺</div><div class="fact-body"><div class="fact-title">💡 Sabias que…?</div><div class="fact-line">Encontra um país na grelha e eu conto-te a capital e quando entrou na UE!</div></div>';
+function flagOf(code){return String.fromCodePoint(...code.split('').map(c=>127397+c.charCodeAt(0)));}
+function showFact(word){
+  const f=FACTS[word]; if(!f) return;
+  const [code,capital,year]=f;
+  const idx=Math.max(0,placed.findIndex(p=>p.word===word));
+  const card=document.getElementById('factCard');
+  card.className='show c'+(idx%12);
+  void card.offsetWidth; // reinicia a animação
+  card.innerHTML=
+    '<div class="fact-flag">'+flagOf(code)+'</div>'+
+    '<div class="fact-body">'+
+      '<div class="fact-title">💡 Sabias que…? <span class="fact-country">'+DISPLAY[word]+'</span></div>'+
+      '<div class="fact-line">🏛️ A capital é <b>'+capital+'</b>.</div>'+
+      '<div class="fact-line">🇪🇺 Entrou na <b>'+(year<1993?'CEE':'UE')+'</b> em <b>'+year+'</b>'+
+        (year<1993?' <span class="fact-note">(hoje UE)</span>':'')+
+        (year===1958?' <span class="fact-badge">país fundador</span>':'')+'</div>'+
+    '</div>';
+}
+function resetFact(){
+  const card=document.getElementById('factCard');
+  card.className='';card.innerHTML=FACT_PLACEHOLDER;
+}
 
 // ─── VOZ ─────────────────────────────────────────────────────────
 const PHONETIC={
-  'PORTUGAL':'Portugal','ESPANHA':'Espanha','FRANCA':'França',
-  'ALEMANHA':'Alemanha','ITALIA':'Itália','BELGICA':'Bélgica',
-  'POLONIA':'Polónia','SUECIA':'Suécia','AUSTRIA':'Áustria',
-  'GRECIA':'Grécia','ROMENIA':'Roménia','HUNGRIA':'Hungria',
-  'CROACIA':'Croácia','BULGARIA':'Bulgária','ESLOVENIA':'Eslovénia',
-  'LITUANIA':'Lituânia','LETONIA':'Letónia','ESTONIA':'Estónia',
+  'PORTUGAL':'Portugal','ESPANHA':'Espanha','FRANÇA':'França',
+  'ALEMANHA':'Alemanha','ITÁLIA':'Itália','BÉLGICA':'Bélgica',
+  'POLÓNIA':'Polónia','SUÉCIA':'Suécia','ÁUSTRIA':'Áustria',
+  'GRÉCIA':'Grécia','ROMÉNIA':'Roménia','HUNGRIA':'Hungria',
+  'CROÁCIA':'Croácia','BULGÁRIA':'Bulgária','ESLOVÉNIA':'Eslovénia',
+  'LITUÂNIA':'Lituânia','LETÓNIA':'Letónia','ESTÓNIA':'Estónia',
   'MALTA':'Malta','CHIPRE':'Chipre','LUXEMBURGO':'Luxemburgo',
-  'IRLANDA':'Irlanda','FINLANDIA':'Finlândia','DINAMARCA':'Dinamarca',
-  'ESLOVAQUIA':'Eslováquia',
+  'IRLANDA':'Irlanda','FINLÂNDIA':'Finlândia','DINAMARCA':'Dinamarca',
+  'ESLOVÁQUIA':'Eslováquia',
 };
 let sndOn=true;
 function speak(txt){
@@ -428,8 +523,8 @@ function buildGrid(){
 
   // Letras de preenchimento: mais frequentes em português, sem confusões
   const FILL = diff===1
-    ? 'AAEEIIOOUUMMNNSSLRRTCPBDFGHV'   // fácil: letras comuns PT
-    : 'ABCDEFGHILMNOPRSTUV';            // normal/difícil: ligeiramente mais variado
+    ? 'AAEEIIOOUUMMNNSSLRRTCPBDFGHVÇÁÉÓÂ'   // fácil: letras comuns PT
+    : 'ABCDEFGHILMNOPRSTUVÇÁÉÓÂ';            // normal/difícil: ligeiramente mais variado
   for(let r=0;r<gridSize;r++)for(let c=0;c<gridSize;c++)
     if(!grid[r][c]) grid[r][c]=FILL[Math.floor(Math.random()*FILL.length)];
 
@@ -478,7 +573,8 @@ function renderWords(){
   wl.innerHTML='';
   words.forEach(w=>{
     const chip=document.createElement('span');
-    chip.className='word-chip'+(foundWords.includes(w)?' found':'');
+    const pi=placed.findIndex(p=>p.word===w);
+    chip.className='word-chip'+(foundWords.includes(w)?' found c'+(pi%12):'');
     chip.id='chip-'+w;
     chip.textContent=DISPLAY[w];
     // Hover to highlight found word on grid
@@ -487,6 +583,7 @@ function renderWords(){
       chip.addEventListener('mouseleave',()=>highlightWordOnGrid(w,false));
       chip.addEventListener('touchstart',()=>highlightWordOnGrid(w,true),{passive:true});
       chip.addEventListener('touchend',()=>highlightWordOnGrid(w,false),{passive:true});
+      chip.addEventListener('click',()=>showFact(w));
     }
     wl.appendChild(chip);
   });
@@ -504,13 +601,20 @@ function highlightWordOnGrid(word, on){
   });
 }
 
-function updateFoundColors(){
+function updateFoundColors(animateWord){
   placed.forEach(({word,cells},idx)=>{
     if(foundWords.includes(word)){
       const ci=idx%12;
-      cells.forEach(([r,c])=>{
+      cells.forEach(([r,c],i)=>{
         const el=document.querySelector(`.cell[data-r="${r}"][data-c="${c}"]`);
-        if(el){el.classList.add('found','c'+ci);}
+        if(el){
+          el.classList.add('found','c'+ci);
+          if(animateWord===word){
+            el.classList.remove('pop');void el.offsetWidth;
+            el.style.animationDelay=(i*55)+'ms';
+            el.classList.add('pop');
+          }
+        }
       });
     }
   });
@@ -587,9 +691,11 @@ function checkSelection(){
   );
   if(match){
     foundWords.push(match.word);
-    speak('Muito bem! '+(PHONETIC[match.word]||match.word));
-    updateFoundColors();
+    const ft=FACTS[match.word];
+    speak('Muito bem! '+(PHONETIC[match.word]||match.word)+'! Sabias que a capital é '+ft[1]+' e que entrou na '+(ft[2]<1993?'Comunidade Económica Europeia, hoje União Europeia,':'União Europeia')+' em '+ft[2]+'?');
+    updateFoundColors(match.word);
     renderWords();
+    showFact(match.word);
     vbOnWordFound();
     if(foundWords.length===words.length) setTimeout(endGame,500);
   } else if(currentCells.length>=2){
@@ -624,6 +730,7 @@ function startGame(){
     '🔥 Palavras em todas as direções, incluindo ao contrário!'];
   document.getElementById('dirHint').textContent=hints[diff-1];
   foundWords=[];
+  resetFact();
   hintsLeft=3;
   paused=false;
   document.getElementById('pauseOverlay').style.display='none';
