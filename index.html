@@ -253,6 +253,7 @@ header{width:100%;max-width:700px;display:flex;align-items:center;justify-conten
       <button class="hbtn" id="btnSnd" onclick="sndOn=!sndOn;this.textContent=sndOn?'🔊':'🔇'">🔊</button>
       <button class="hbtn" id="btnHint" onclick="useHint()" title="Dica">💡<span id="hintCount">3</span></button>
       <button class="hbtn" id="btnPause" onclick="togglePause()" title="Pausa">⏸</button>
+      <button class="hbtn" id="btnFs" onclick="toggleFullscreen()" title="Ecrã inteiro" aria-label="Ecrã inteiro"></button>
       <button class="hbtn" onclick="showStart()">🏠</button>
     </div>
   </header>
@@ -1034,6 +1035,34 @@ setInterval(()=>{
 },18000);
 
 setTimeout(()=>showBub('Olá! Sou o VanBerto\'s! Encontra os países da UE! 🇪🇺'),900);
+
+// ── ECRÃ INTEIRO ─────────────────────────────────────────────────────────
+const FS_IN='<svg width="16" height="16" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 7V3h4M13 3h4v4M17 13v4h-4M7 17H3v-4"/></svg>';
+const FS_OUT='<svg width="16" height="16" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 3v4H3M13 3v4h4M17 13h-4v4M3 13h4v4"/></svg>';
+function fsElement(){return document.fullscreenElement||document.webkitFullscreenElement||null;}
+function toggleFullscreen(){
+  const d=document,el=d.documentElement;
+  try{
+    if(!fsElement()){ const p=(el.requestFullscreen||el.webkitRequestFullscreen).call(el); if(p&&p.catch)p.catch(()=>{}); }
+    else{ const p=(d.exitFullscreen||d.webkitExitFullscreen).call(d); if(p&&p.catch)p.catch(()=>{}); }
+  }catch(e){}
+}
+function fsUpdate(){
+  const b=document.getElementById('btnFs'); if(!b)return;
+  const on=!!fsElement();
+  b.innerHTML=on?FS_OUT:FS_IN;
+  b.title=on?'Sair do ecrã inteiro':'Ecrã inteiro';
+  b.setAttribute('aria-label',b.title);
+  setTimeout(()=>window.dispatchEvent(new Event('resize')),150);
+}
+(function(){
+  const b=document.getElementById('btnFs');
+  const ok=document.documentElement.requestFullscreen||document.documentElement.webkitRequestFullscreen;
+  if(!ok){ if(b)b.style.display='none'; return; }   // ex.: iPhone não suporta
+  fsUpdate();
+  document.addEventListener('fullscreenchange',fsUpdate);
+  document.addEventListener('webkitfullscreenchange',fsUpdate);
+})();
 </script>
 </body>
 </html>
