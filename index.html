@@ -495,7 +495,44 @@ header{justify-content:center;}
 
 .h2l{display:block;}
 
+/* fundo: pontinhos dourados suaves (como o creme com pontinhos da Cibersegurança) */
+body::before{
+  background:
+    radial-gradient(rgba(255,214,0,.20) 1.5px,transparent 1.8px) 0 0/24px 24px,
+    radial-gradient(ellipse at 20% 20%,rgba(21,101,255,0.20),transparent 55%),
+    radial-gradient(ellipse at 80% 80%,rgba(156,39,176,0.15),transparent 55%),
+    linear-gradient(160deg,#02040f,#060a1e,#080520);
+}
+body::after{opacity:.55;animation:none;}
+
 #dirHint{text-align:center;}
+
+/* ═══ ANIMAÇÕES (como na Cibersegurança) ═══ */
+.cell,.cw-cell{position:relative;}
+.mbg{overflow:hidden;}
+.mbg::before{content:'';position:absolute;inset:0;pointer-events:none;
+  background:radial-gradient(ellipse 70% 55% at 50% 45%,rgba(255,214,0,.16),transparent 62%);
+  animation:ueGlow 6s ease-in-out infinite;}
+@keyframes ueGlow{0%,100%{opacity:.35;transform:scale(1)}33%{opacity:1;transform:scale(1.06) translate(1%,-1%)}66%{opacity:.6;transform:scale(.97)}}
+.spark{position:absolute;left:50%;top:50%;font-size:14px;line-height:1;pointer-events:none;z-index:5;animation:sparkFly .85s ease-out forwards;}
+@keyframes sparkFly{0%{transform:translate(-50%,-50%) scale(.4);opacity:1}100%{transform:translate(calc(-50% + var(--dx)),calc(-50% + var(--dy))) scale(1.2) rotate(var(--rot));opacity:0}}
+.word-chip.just,.clue-item.just{animation:wordJust .7s cubic-bezier(.34,1.56,.64,1);}
+@keyframes wordJust{0%{transform:scale(1)}35%{transform:scale(1.18) rotate(-3deg)}100%{transform:scale(1) rotate(0)}}
+#wordPop{position:fixed;left:50%;top:38%;z-index:70;pointer-events:none;
+  transform:translate(-50%,-50%) scale(.3) rotate(-6deg);opacity:0;
+  background:var(--navy,#0f1d55);border:4px solid var(--ink,#010617);border-radius:22px;box-shadow:0 7px 0 var(--ink,#010617),0 0 0 3px var(--gold,#FFD600);
+  padding:.35em .9em .4em;text-align:center;white-space:nowrap;
+  font-family:'Fredoka One','Nunito',sans-serif;color:#fff;font-size:clamp(1.5rem,6.5vw,3rem);line-height:1.1;}
+#wordPop small{display:block;font-size:.42em;color:var(--gold,#FFD600);letter-spacing:.5px;margin-bottom:.15em;}
+#wordPop b{display:inline-block;padding:0 .3em;border-radius:12px;background:var(--wp,var(--gold,#FFD600));color:var(--wt,#010617);border:3px solid var(--ink,#010617);font-weight:400;}
+#wordPop.show{opacity:1;transform:translate(-50%,-50%) scale(1) rotate(-2deg);animation:wordPopIn 1.5s ease both;}
+@keyframes wordPopIn{0%{transform:translate(-50%,-50%) scale(.3) rotate(-8deg);opacity:0}18%{transform:translate(-50%,-50%) scale(1.15) rotate(2deg);opacity:1}30%{transform:translate(-50%,-50%) scale(1) rotate(-2deg)}78%{transform:translate(-50%,-50%) scale(1) rotate(-2deg);opacity:1}100%{transform:translate(-50%,-62%) scale(.9) rotate(-2deg);opacity:0}}
+#btnHint{animation:hintBtnPulse 2s ease-in-out infinite;}
+@keyframes hintBtnPulse{0%,100%{box-shadow:0 3px 0 var(--ink,#010617),0 0 0 3px rgba(255,214,0,.30)}50%{box-shadow:0 3px 0 var(--ink,#010617),0 0 0 7px rgba(255,214,0,.12)}}
+.cell.hint-flash{box-shadow:0 0 0 4px var(--gold,#FFD600),0 0 18px 6px rgba(255,214,0,.85);z-index:4;}
+@media(prefers-reduced-motion:reduce){.mbg::before,#btnHint,.spark,.word-chip.just,.clue-item.just,#wordPop.show{animation:none!important;}}
+html.no-anim .mbg::before,html.no-anim #btnHint,html.no-anim .spark{animation:none!important;}
+#timer[hidden],#endTime[hidden]{display:none!important;}
 </style>
 </head>
 <body>
@@ -504,7 +541,7 @@ header{justify-content:center;}
     <span class="htitle">🇪🇺 VanBerto's — Sopa de Letras</span>
     <div class="hinfo">
       <span id="foundCount">0/0</span>
-      <span id="timer">00:00</span>
+      <span id="timer" hidden>00:00</span>
       <button class="hbtn" id="btnSnd" onclick="sndOn=!sndOn;this.textContent=sndOn?'🔊':'🔇'">🔊</button>
       <button class="hbtn" id="btnHint" onclick="useHint()" title="Dica">💡<span id="hintCount">3</span></button>
       <button class="hbtn" id="btnPause" onclick="togglePause()" title="Pausa">⏸</button>
@@ -565,7 +602,7 @@ header{justify-content:center;}
     <div class="win-stats">
       <div class="win-stat">⭐ Palavras encontradas: <strong id="endFound">0 / 0</strong></div>
       <div class="win-stat">🎮 Nível: <strong id="endLevel">—</strong></div>
-      <div class="win-stat">⏱️ Tempo: <strong id="endTime">00:00</strong></div>
+      <span id="endTime" hidden></span>
     </div>
     <div class="row">
       <button class="bplay" onclick="startGame()">🔄 Jogar de novo</button>
@@ -815,10 +852,45 @@ function highlightWordOnGrid(word, on){
   });
 }
 
+
+const PRAISE=['Boa!','Fantástico!','Isso mesmo!','Descobriste!','Uau!','Excelente!','Bom olho!'];
+let wordPopT=null;
+function ueSparks(cl,k){
+  for(let n=0;n<3;n++){
+    const sp=document.createElement('span');
+    sp.className='spark';sp.textContent=['⭐','✨','🌟'][(k+n)%3];
+    const ang=Math.random()*Math.PI*2,dist=22+Math.random()*26;
+    sp.style.setProperty('--dx',Math.cos(ang)*dist+'px');
+    sp.style.setProperty('--dy',Math.sin(ang)*dist+'px');
+    sp.style.setProperty('--rot',(Math.random()*180-90)+'deg');
+    sp.style.animationDelay=(k*60)+'ms';
+    cl.appendChild(sp);setTimeout(()=>sp.remove(),1100+k*60);
+  }
+}
+function ueWordPop(word,bg,fg){
+  const wp=document.getElementById('wordPop');if(!wp)return;
+  wp.innerHTML='<small>'+PRAISE[Math.floor(Math.random()*PRAISE.length)]+'</small><b></b>';
+  wp.querySelector('b').textContent=word;
+  if(bg)wp.style.setProperty('--wp',bg);else wp.style.removeProperty('--wp');
+  if(fg)wp.style.setProperty('--wt',fg);else wp.style.removeProperty('--wt');
+  wp.classList.remove('show');void wp.offsetWidth;wp.classList.add('show');
+  clearTimeout(wordPopT);wordPopT=setTimeout(()=>wp.classList.remove('show'),1500);
+}
+function ueJust(el){if(!el)return;el.classList.remove('just');void el.offsetWidth;el.classList.add('just');}
+function ueCelebrate(word,cells,idx){
+  setTimeout(()=>{
+    let first=null;
+    cells.forEach(([r,c],k)=>{const el=cellAt(r,c);if(!el)return;if(!first)first=el;ueSparks(el,k);});
+    ueJust(document.getElementById('chip-'+word));
+    const cs=first?getComputedStyle(first):null;
+    ueWordPop(word,cs&&cs.backgroundColor,cs&&cs.color);
+  },0);
+}
 function updateFoundColors(animateWord){
   placed.forEach(({word,cells},idx)=>{
     if(foundWords.includes(word)){
       const ci=idx%12;
+      if(animateWord===word) ueCelebrate(word,cells,idx);
       cells.forEach(([r,c],i)=>{
         const el=document.querySelector(`.cell[data-r="${r}"][data-c="${c}"]`);
         if(el){
@@ -1388,5 +1460,6 @@ function fsUpdate(){
   document.addEventListener('webkitfullscreenchange',fsUpdate);
 })();
 </script>
+<div id="wordPop" role="status" aria-live="polite"></div>
 </body>
 </html>
